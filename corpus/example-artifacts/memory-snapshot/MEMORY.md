@@ -1,0 +1,3 @@
+- [Reply style](reply-style.md) — user likes concise, direct answers
+- [Project stack](project-stack.md) — Vite + TypeScript on Cloudflare Pages
+- [Naming](naming.md) — use kebab-case for new files

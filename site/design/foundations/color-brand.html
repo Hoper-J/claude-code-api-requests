@@ -1,0 +1,33 @@
+<!-- @dsCard group="Colors" viewport="700x210" name="Brand — sapphire & amber" subtitle="Interactive sapphire; amber accent for 'changed'" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../public/styles.css">
+<style>
+  body { padding: 24px 28px; background: var(--bg-app); }
+  .grp { display:flex; gap:10px; }
+  .grp + .grp { margin-top: 12px; }
+  .sw { flex:1; border-radius: var(--radius-2); overflow: hidden; border: 1px solid var(--line-hairline); }
+  .chip { height: 50px; }
+  .lab { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); padding: 6px 7px 7px; line-height:1.35; background: var(--surface-card); }
+  .lab b { display:block; color: var(--text-strong); font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="grp">
+    <div class="sw"><div class="chip" style="background:var(--sapphire-700)"></div><div class="lab"><b>press</b>700</div></div>
+    <div class="sw"><div class="chip" style="background:var(--sapphire-600)"></div><div class="lab"><b>brand</b>600</div></div>
+    <div class="sw"><div class="chip" style="background:var(--sapphire-500)"></div><div class="lab"><b>hover</b>500</div></div>
+    <div class="sw"><div class="chip" style="background:var(--sapphire-100)"></div><div class="lab"><b>tint</b>100</div></div>
+    <div class="sw"><div class="chip" style="background:var(--sapphire-050)"></div><div class="lab"><b>faint</b>050</div></div>
+  </div>
+  <div class="grp">
+    <div class="sw"><div class="chip" style="background:var(--amber-600)"></div><div class="lab"><b>accent</b>600</div></div>
+    <div class="sw"><div class="chip" style="background:var(--amber-500)"></div><div class="lab"><b>amber</b>500</div></div>
+    <div class="sw"><div class="chip" style="background:var(--amber-100)"></div><div class="lab"><b>tint</b>100</div></div>
+    <div class="sw"><div class="chip" style="background:var(--amber-050)"></div><div class="lab"><b>faint</b>050</div></div>
+    <div class="sw" style="visibility:hidden"><div class="chip"></div><div class="lab"><b>.</b>.</div></div>
+  </div>
+</body>
+</html>

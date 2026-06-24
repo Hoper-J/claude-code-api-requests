@@ -1,0 +1,94 @@
+<!-- @dsCard group="Components" viewport="700x780" name="Corpus — payload, tools, diff, changelog" subtitle="CodeBlock · ToolCard · DiffLine · DeltaSummary · ChangelogEntry" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../../public/styles.css">
+<style>
+  body { margin:0; background: var(--bg-app); padding: 24px 28px; }
+  .sec { margin-bottom: 20px; }
+  .sec:last-child { margin-bottom: 0; }
+  .lbl { font-family: var(--font-ui); font-size: 11px; text-transform: uppercase; letter-spacing: var(--track-over); font-weight: 600; color: var(--text-faint); margin-bottom: 10px; }
+  .well { border:1px solid var(--line-hairline); border-radius: var(--radius-3); overflow:hidden; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" data-presets="react" src="../../../public/kit-lib.jsx"></script>
+  <script type="text/babel" data-presets="react">
+
+    const sys = `You are an interactive CLI tool that helps users with
+software engineering tasks. Use the instructions below and the
+tools available to you to assist the user.
+
+IMPORTANT: Assist with defensive security tasks only. Refuse to
+create, modify, or improve code that may be used maliciously.`;
+
+    const schema = {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {
+        "command": { "type": "string", "description": "The command to execute" },
+        "timeout": { "type": "number", "description": "Optional timeout in ms" }
+      },
+      "required": ["command"]
+    };
+
+    function Demo() {
+      return (
+        <div>
+          <div className="sec">
+            <div className="lbl">DeltaSummary — what changed (generated)</div>
+            <DeltaSummary delta={{ tools_added:['WebSearch','TodoWrite'], tools_modified:['Bash'], system_chars_delta: 1284 }} tone="editorial" />
+          </div>
+
+          <div className="sec">
+            <div className="lbl">CodeBlock — system prompt</div>
+            <CodeBlock label="system prompt · block 2" copyText={sys}>{sys}</CodeBlock>
+          </div>
+
+          <div className="sec">
+            <div className="lbl">ToolCard</div>
+            <div style={{display:'grid', gap:8}}>
+              <ToolCard name="Bash" description="Executes a given bash command in a persistent shell session with optional timeout." schema={schema} defaultOpen />
+              <ToolCard name="WebSearch" change="added" description="Search the web and return results." />
+            </div>
+          </div>
+
+          <div className="sec">
+            <div className="lbl">DiffLine — system prompt diff</div>
+            <div className="well">
+              <DiffLine kind="context" showNumbers oldNo={11} newNo={11}># Tone and style</DiffLine>
+              <DiffLine kind="del" showNumbers oldNo={12}>You should be concise and direct.</DiffLine>
+              <DiffLine kind="add" showNumbers newNo={12}>You should be concise, direct, and to the point.</DiffLine>
+              <DiffLine kind="context" showNumbers oldNo={13} newNo={13}>Answer the user's question directly.</DiffLine>
+            </div>
+          </div>
+
+          <div className="sec">
+            <div className="lbl">ChangelogEntry — official release notes (verbatim)</div>
+            <ChangelogEntry
+              bullets={[
+                "Added `/cd` command to move a session to a new working directory without breaking the prompt cache mid-session",
+                "Fixed footer hints (e.g. \"esc to interrupt\") not showing for users with a custom statusline",
+                "Reduced CPU usage while responses stream and during spinner animations",
+              ]}
+              counts={{ add: 1, fix: 1, imp: 1, chg: 0, oth: 0 }}
+              source={{ name: "anthropics/claude-code · CHANGELOG.md", url: "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" }}
+            />
+          </div>
+
+          <div className="sec">
+            <div className="lbl">ChangelogEntry — missing entry (calm state)</div>
+            <ChangelogEntry bullets={null} />
+          </div>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+  </script>
+</body>
+</html>

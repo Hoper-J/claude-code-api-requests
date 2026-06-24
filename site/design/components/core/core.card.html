@@ -1,0 +1,103 @@
+<!-- @dsCard group="Components" viewport="700x520" name="Core — buttons, chips, badges" subtitle="Button · VersionChip · Badge · Tag · StatusDot · Tooltip" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../../public/styles.css">
+<style>
+  body { margin:0; background: var(--bg-app); padding: 26px 30px; }
+  .sec { margin-bottom: 22px; }
+  .sec:last-child { margin-bottom: 0; }
+  .lbl { font-family: var(--font-ui); font-size: 11px; text-transform: uppercase; letter-spacing: var(--track-over); font-weight: 600; color: var(--text-faint); margin-bottom: 11px; }
+  .rowf { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" data-presets="react" src="../../../public/kit-lib.jsx"></script>
+  <script type="text/babel" data-presets="react">
+
+    function I({ d, w = 16 }) {
+      return (
+        <svg width={w} height={w} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{d}</svg>
+      );
+    }
+    const copy = <I d={<><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></>} />;
+    const arrow = <I d={<><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></>} />;
+    const compare = <I d={<><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></>} />;
+
+    function Demo() {
+      return (
+        <div>
+          <div className="sec">
+            <div className="lbl">Button — variants</div>
+            <div className="rowf">
+              <Button variant="primary" iconLeft={compare}>Compare versions</Button>
+              <Button variant="secondary">View payload</Button>
+              <Button variant="ghost" iconRight={arrow}>Next version</Button>
+              <Button variant="danger">Reset</Button>
+              <Button variant="primary" disabled>Disabled</Button>
+            </div>
+          </div>
+          <div className="sec">
+            <div className="lbl">Button — sizes</div>
+            <div className="rowf">
+              <Button size="sm" variant="secondary" iconLeft={copy}>Copy</Button>
+              <Button size="md" variant="secondary">Medium</Button>
+              <Button size="lg" variant="primary">Open explorer</Button>
+            </div>
+          </div>
+          <div className="sec">
+            <div className="lbl">VersionChip</div>
+            <div className="rowf">
+              <VersionChip version="2.0.0" />
+              <VersionChip version="2.1.38" selected />
+              <VersionChip version="2.0.46" status="fail" />
+              <VersionChip version="2.0.50" status="aux" />
+              <VersionChip version="2.1.55" size="lg" />
+            </div>
+          </div>
+          <div className="sec">
+            <div className="lbl">Badge &amp; Tag</div>
+            <div className="rowf">
+              <Badge tone="neutral" mono>15 tools</Badge>
+              <Badge tone="add" mono>+2</Badge>
+              <Badge tone="del" mono>−1</Badge>
+              <Badge tone="mod" mono>~3</Badge>
+              <Badge tone="brand">main inference</Badge>
+              <Badge tone="accent">modified</Badge>
+              <Tag>regime: js</Tag>
+              <Tag interactive onRemove={() => {}}>oauth-2025-04-20</Tag>
+            </div>
+          </div>
+          <div className="sec">
+            <div className="lbl">StatusDot</div>
+            <div className="rowf" style={{ gap: 18 }}>
+              <span style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:'var(--font-ui)',fontSize:13,color:'var(--text-muted)'}}><StatusDot status="ok"/> captured</span>
+              <span style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:'var(--font-ui)',fontSize:13,color:'var(--text-muted)'}}><StatusDot status="fail"/> no capture</span>
+              <span style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:'var(--font-ui)',fontSize:13,color:'var(--text-muted)'}}><StatusDot status="aux"/> auxiliary</span>
+              <span style={{display:'inline-flex',alignItems:'center',gap:7,fontFamily:'var(--font-ui)',fontSize:13,color:'var(--text-muted)'}}><StatusDot status="active" pulse/> active</span>
+            </div>
+          </div>
+          <div className="sec">
+            <div className="lbl">Tooltip — hover / focus</div>
+            <div className="rowf">
+              <Tooltip tip="MCP hadn't finished connecting when this version was captured — a capture-time state, not a removal in this version.">
+                <Badge tone="accent">MCP not connected</Badge>
+              </Tooltip>
+              <Tooltip tip="Hover or keyboard-focus to reveal. Light card surface, pop shadow, wraps at 248px.">
+                <Badge tone="neutral" mono>hover / focus me</Badge>
+              </Tooltip>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+  </script>
+</body>
+</html>

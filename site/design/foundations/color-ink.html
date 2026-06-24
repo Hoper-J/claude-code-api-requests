@@ -1,0 +1,25 @@
+<!-- @dsCard group="Colors" viewport="700x190" name="Ink — text ramp" subtitle="Warm near-black, primary → faint" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../public/styles.css">
+<style>
+  body { padding: 24px 28px; background: var(--bg-app); }
+  .swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .sw { border-radius: var(--radius-2); overflow: hidden; border: 1px solid var(--line-hairline); }
+  .chip { height: 56px; display:flex; align-items:flex-end; padding:7px 8px; font-family:var(--font-editorial); font-size:20px; font-weight:600; color: var(--paper-0); }
+  .lab { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); padding: 6px 7px 7px; line-height:1.35; background: var(--surface-card); }
+  .lab b { display:block; color: var(--text-strong); font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:var(--ink-900)">Aa</div><div class="lab"><b>900</b>strong</div></div>
+    <div class="sw"><div class="chip" style="background:var(--ink-700)">Aa</div><div class="lab"><b>700</b>body</div></div>
+    <div class="sw"><div class="chip" style="background:var(--ink-600)">Aa</div><div class="lab"><b>600</b>muted</div></div>
+    <div class="sw"><div class="chip" style="background:var(--ink-500)">Aa</div><div class="lab"><b>500</b>faint</div></div>
+    <div class="sw"><div class="chip" style="background:var(--ink-400)">Aa</div><div class="lab"><b>400</b>placeholder</div></div>
+  </div>
+</body>
+</html>

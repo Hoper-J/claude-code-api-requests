@@ -1,0 +1,27 @@
+<!-- @dsCard group="Colors" viewport="700x190" name="Paper — warm neutrals" subtitle="Surfaces, wells, hairlines (light)" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../public/styles.css">
+<style>
+  body { padding: 24px 28px; background: var(--bg-app); }
+  .swatches { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+  .sw { border-radius: var(--radius-2); overflow: hidden; border: 1px solid var(--line-hairline); }
+  .chip { height: 56px; }
+  .lab { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); padding: 6px 7px 7px; line-height: 1.35; background: var(--surface-card); }
+  .lab b { display:block; color: var(--text-strong); font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:var(--paper-0)"></div><div class="lab"><b>0</b>card</div></div>
+    <div class="sw"><div class="chip" style="background:var(--paper-50)"></div><div class="lab"><b>50</b>app bg</div></div>
+    <div class="sw"><div class="chip" style="background:var(--paper-100)"></div><div class="lab"><b>100</b>well</div></div>
+    <div class="sw"><div class="chip" style="background:var(--paper-150)"></div><div class="lab"><b>150</b>sunk</div></div>
+    <div class="sw"><div class="chip" style="background:var(--paper-200)"></div><div class="lab"><b>200</b>hairline</div></div>
+    <div class="sw"><div class="chip" style="background:var(--paper-300)"></div><div class="lab"><b>300</b>border</div></div>
+    <div class="sw"><div class="chip" style="background:var(--paper-400)"></div><div class="lab"><b>400</b>edge</div></div>
+  </div>
+</body>
+</html>

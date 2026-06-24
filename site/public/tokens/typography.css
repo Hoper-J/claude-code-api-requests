@@ -1,0 +1,61 @@
+/* ============================================================
+   Lineage — Typography tokens
+   Three voices: serif (editorial), grotesk (UI), mono (corpus).
+   The split mirrors the site's i18n model — serif/sans is
+   localizable chrome; mono is the verbatim, never-translated
+   API payload.
+   ============================================================ */
+
+:root {
+  /* ---- Families ---- */
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans:  "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono:  "JetBrains Mono", ui-monospace, "SF Mono", "Menlo", monospace;
+
+  /* Editorial = serif, the teaching voice           */
+  --font-editorial: var(--font-serif);
+  /* UI chrome = grotesk, labels / buttons / metadata */
+  --font-ui:        var(--font-sans);
+  /* Corpus = mono, verbatim payload                  */
+  --font-corpus:    var(--font-mono);
+
+  /* ---- Weights ---- */
+  --w-regular: 400;  /* @kind other */
+  --w-medium:  500;  /* @kind other */
+  --w-semibold:600;  /* @kind other */
+  --w-bold:    700;  /* @kind other */
+
+  /* ---- Type scale (rem, 1rem = 16px) ---- */
+  --t-display:  3.0rem;   /* 48 — hero editorial          */
+  --t-h1:       2.125rem; /* 34 — page title              */
+  --t-h2:       1.5rem;   /* 24 — section                 */
+  --t-h3:       1.1875rem;/* 19 — subsection              */
+  --t-lead:     1.25rem;  /* 20 — editorial lead          */
+  --t-body:     1rem;     /* 16 — body                    */
+  --t-ui:       0.875rem; /* 14 — default UI text         */
+  --t-sm:       0.8125rem;/* 13 — secondary UI            */
+  --t-caption:  0.75rem;  /* 12 — captions / overline     */
+  --t-micro:    0.6875rem;/* 11 — table micro-labels      */
+
+  /* Corpus (mono) sizes — payload readability */
+  --t-code:     0.8125rem;/* 13 — code blocks             */
+  --t-code-sm:  0.75rem;  /* 12 — dense schema            */
+
+  /* ---- Line heights ---- */
+  --lh-tight:   1.1;      /* @kind other */
+  --lh-snug:    1.28;     /* @kind other */
+  --lh-body:    1.6;      /* @kind other */
+  --lh-ui:      1.45;     /* @kind other */
+  --lh-code:    1.62;     /* @kind other */
+
+  /* ---- Tracking ---- */
+  --track-tight:  -0.02em;  /* @kind other */
+  --track-normal: 0em;      /* @kind other */
+  --track-ui:    -0.006em;  /* @kind other */
+  --track-over:   0.10em;   /* @kind other */
+  --track-wide:   0.04em;   /* @kind other */
+
+  /* ---- Optical sizing for Newsreader ---- */
+  --opsz-display: 60;  /* @kind other */
+  --opsz-text:    16;  /* @kind other */
+}

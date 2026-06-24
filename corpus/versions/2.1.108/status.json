@@ -1,0 +1,22 @@
+{
+ "version": "2.1.108",
+ "result": "ok",
+ "phase": "done",
+ "regime": "js",
+ "claude_bin": "~/claude-code-api-requests/corpus/versions/2.1.108/claude-wrapper.sh",
+ "install_ok": true,
+ "install_seconds": 2,
+ "capture_exit": 0,
+ "http_status": 200,
+ "ja3": "<ja3#1>",
+ "ja4": "<ja4#1>",
+ "model_in_request": "claude-opus-4-6",
+ "system_blocks": 4,
+ "tools_count": 10,
+ "is_quota_probe": false,
+ "is_main_inference": true,
+ "captured_at": "2026-06-10",
+ "duration_seconds": 760,
+ "pruned": true,
+ "error": ""
+}

@@ -1,0 +1,32 @@
+<!-- @dsCard group="Colors" viewport="700x230" name="Diff semantics" subtitle="Add / remove / modified — the heart of Lineage" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../public/styles.css">
+<style>
+  body { padding: 22px 26px; background: var(--bg-app); }
+  .diff { font-family: var(--font-mono); font-size: var(--t-code); line-height: 1.7; border: 1px solid var(--line-hairline); border-radius: var(--radius-3); overflow: hidden; }
+  .ln { display: grid; grid-template-columns: 30px 1fr; }
+  .gut { text-align: center; user-select: none; font-weight: 600; }
+  .txt { padding-right: 12px; white-space: pre; }
+  .add { background: var(--add-surface); }
+  .add .gut { color: var(--add-marker); } .add .txt { color: var(--add-text); }
+  .del { background: var(--del-surface); }
+  .del .gut { color: var(--del-marker); } .del .txt { color: var(--del-text); }
+  .mod { background: var(--mod-surface); }
+  .mod .gut { color: var(--mod-text); } .mod .txt { color: var(--mod-text); }
+  .ctx .gut { color: var(--text-faint); } .ctx .txt { color: var(--text-muted); }
+  .pad { padding-left: 10px; }
+</style>
+</head>
+<body>
+  <div class="diff">
+    <div class="ln ctx"><span class="gut"> </span><span class="txt pad"># Tone and style</span></div>
+    <div class="ln del"><span class="gut">−</span><span class="txt pad">You should be concise and direct.</span></div>
+    <div class="ln add"><span class="gut">+</span><span class="txt pad">You should be concise, direct, and to the point.</span></div>
+    <div class="ln mod"><span class="gut">~</span><span class="txt pad">IMPORTANT: minimize output tokens where possible.</span></div>
+    <div class="ln ctx"><span class="gut"> </span><span class="txt pad">Answer the user's question directly.</span></div>
+  </div>
+</body>
+</html>

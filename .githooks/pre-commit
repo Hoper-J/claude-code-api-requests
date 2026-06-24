@@ -1,0 +1,13 @@
+#!/bin/sh
+# PII gate: block commits while staged corpus data still contains raw PII.
+# Installed via:  git config core.hooksPath .githooks
+# Bypass (emergencies only):  git commit --no-verify
+if git diff --cached --name-only | grep -qE '^corpus/(versions/|manifest\.json)'; then
+  root="$(git rev-parse --show-toplevel)"
+  if ! node "$root/sanitize/sanitize.js" --check; then
+    echo "" >&2
+    echo "x corpus PII gate failed — run:  node sanitize/sanitize.js   then re-stage." >&2
+    exit 1
+  fi
+fi
+exit 0

@@ -1,0 +1,57 @@
+/* ============================================================
+   Lineage — Elevation & motion
+   Near-flat. Structure comes from hairline rules, not shadows.
+   Shadows are warm-tinted and reserved for floating layers.
+   ============================================================ */
+
+:root {
+  /* ---- Shadows (warm ink, low) ---- */
+  --shadow-none: none;
+  --shadow-sm:
+    0 1px 1px oklch(0.30 0.02 66 / 0.04),
+    0 1px 2px oklch(0.30 0.02 66 / 0.05);
+  --shadow-md:
+    0 2px 4px oklch(0.30 0.02 66 / 0.05),
+    0 4px 12px oklch(0.30 0.02 66 / 0.07);
+  --shadow-lg:
+    0 8px 20px oklch(0.30 0.02 66 / 0.10),
+    0 2px 6px oklch(0.30 0.02 66 / 0.06);
+  --shadow-pop:
+    0 12px 32px oklch(0.25 0.02 66 / 0.14),
+    0 4px 10px oklch(0.25 0.02 66 / 0.08);
+
+  /* Inset for wells / code blocks */
+  --shadow-inset: inset 0 1px 2px oklch(0.30 0.02 66 / 0.04);
+
+  /* ---- Focus ---- */
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --focus-shadow: 0 0 0 var(--focus-width) var(--bg-app),
+                  0 0 0 calc(var(--focus-width) * 2) var(--focus-ring);
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);     /* @kind other */
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);  /* @kind other */
+  --ease-in:       cubic-bezier(0.4, 0, 1, 1);     /* @kind other */
+
+  --dur-1: 90ms;   /* @kind other */
+  --dur-2: 150ms;  /* @kind other */
+  --dur-3: 220ms;  /* @kind other */
+  --dur-4: 320ms;  /* @kind other */
+
+  /* Default transition for interactive chrome */
+  --transition-ui:
+    background-color var(--dur-2) var(--ease-standard),
+    border-color var(--dur-2) var(--ease-standard),
+    color var(--dur-2) var(--ease-standard),
+    box-shadow var(--dur-2) var(--ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms; /* @kind other */
+    --dur-2: 0ms; /* @kind other */
+    --dur-3: 0ms; /* @kind other */
+    --dur-4: 0ms; /* @kind other */
+  }
+}

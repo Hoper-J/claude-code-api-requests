@@ -1,0 +1,12 @@
+# Cloudflare Pages headers — cache contract per DESIGN.md §6/§7
+# /data/v/<version>.json is immutable: the version IS the content hash.
+/data/v/*
+  Cache-Control: public, max-age=31536000, immutable
+/data/index.json
+  Cache-Control: public, max-age=300
+/data/latest.json
+  Cache-Control: public, max-age=300
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -1,0 +1,22 @@
+<!-- @dsCard group="Type" viewport="700x320" name="Editorial — Newsreader" subtitle="The teaching voice: serif display, headings, lead, prose" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../public/styles.css">
+<style>
+  body { padding: 28px 32px; background: var(--bg-app); }
+  .row { display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid var(--line-faint); padding: 10px 0; }
+  .row:last-child { border-bottom: 0; }
+  .tag { flex: 0 0 96px; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); letter-spacing: .02em; }
+  .ed { font-family: var(--font-editorial); color: var(--text-strong); font-optical-sizing: auto; }
+</style>
+</head>
+<body>
+  <div class="row"><span class="tag">display / 48</span><span class="ed" style="font-size: var(--t-display); font-weight:600; letter-spacing:var(--track-tight); line-height:1.05;">How the request evolved</span></div>
+  <div class="row"><span class="tag">h1 / 34</span><span class="ed" style="font-size: var(--t-h1); font-weight:600; letter-spacing:var(--track-tight);">System prompt, version by version</span></div>
+  <div class="row"><span class="tag">h2 / 24</span><span class="ed" style="font-size: var(--t-h2); font-weight:600;">Tool definitions</span></div>
+  <div class="row"><span class="tag">lead / 20</span><span class="ed" style="font-size: var(--t-lead); font-weight:400; line-height:1.5; font-style:italic; color:var(--text-body);">A finite, immutable corpus you can read end to end.</span></div>
+  <div class="row"><span class="tag">prose / 16</span><span class="ed" style="font-size: var(--t-body); font-weight:400; line-height:var(--lh-body); color:var(--text-body); max-width:52ch;">Each version sends a system prompt and a set of tools. Lineage renders them verbatim and shows what changed between consecutive releases.</span></div>
+</body>
+</html>

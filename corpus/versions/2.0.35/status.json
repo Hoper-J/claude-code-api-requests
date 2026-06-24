@@ -1,0 +1,22 @@
+{
+ "version": "2.0.35",
+ "result": "ok",
+ "phase": "done",
+ "regime": "js",
+ "claude_bin": "~/claude-code-api-requests/corpus/versions/2.0.35/claude-wrapper.sh",
+ "install_ok": true,
+ "install_seconds": 2,
+ "capture_exit": 0,
+ "http_status": 200,
+ "ja3": "<ja3#2>",
+ "ja4": "<ja4#2>",
+ "model_in_request": "claude-sonnet-4-5-20250929",
+ "system_blocks": 2,
+ "tools_count": 16,
+ "is_quota_probe": false,
+ "is_main_inference": true,
+ "captured_at": "2026-06-10",
+ "duration_seconds": 20,
+ "pruned": true,
+ "error": ""
+}

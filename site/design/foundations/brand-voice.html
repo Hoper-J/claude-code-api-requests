@@ -1,0 +1,30 @@
+<!-- @dsCard group="Brand" viewport="700x210" name="Voice — chrome vs corpus" subtitle="Serif/sans is localized chrome; mono is verbatim corpus" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../public/styles.css">
+<style>
+  body { padding: 24px 28px; background: var(--bg-app); display:grid; gap: 16px; }
+  .eyebrow { font-family: var(--font-ui); font-size: 11px; text-transform: uppercase; letter-spacing: var(--track-over); font-weight: 600; color: var(--text-muted); }
+  .changed { font-family: var(--font-editorial); font-size: 19px; color: var(--text-strong); }
+  .changed .add { color: var(--add-text); font-weight: 600; }
+  .changed .amber { color: var(--accent); font-weight: 600; }
+  .corpus { font-family: var(--font-mono); font-size: var(--t-code); color: var(--text-body); background: var(--surface-well); border:1px solid var(--line-hairline); border-radius: var(--radius-2); padding: 10px 12px; white-space: pre; }
+  .note { font-family: var(--font-ui); font-size: 12px; color: var(--text-faint); }
+  .pill { display:inline-block; font-family: var(--font-mono); font-size: 10px; padding: 1px 7px; border-radius: var(--radius-pill); border:1px solid var(--line-strong); color: var(--text-muted); margin-left: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+  <div>
+    <div class="eyebrow">What changed <span class="pill">chrome · localized</span></div>
+    <div class="changed">Added <span class="add">2 tools</span> · <span class="amber">1 modified</span> · +1,284 chars</div>
+  </div>
+  <div>
+    <div class="eyebrow" style="margin-bottom:6px">System prompt <span class="pill">corpus · verbatim</span></div>
+    <div class="corpus">You are an interactive CLI tool that helps users
+with software engineering tasks.</div>
+  </div>
+  <div class="note">Switch to 中文 and only the eyebrows change — the mono block never does.</div>
+</body>
+</html>

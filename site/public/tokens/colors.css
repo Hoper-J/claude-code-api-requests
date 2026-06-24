@@ -1,0 +1,142 @@
+/* ============================================================
+   Lineage — Color tokens
+   Warm ivory "paper" + cool sapphire ink. Archival, precise.
+   Base ramps first, then semantic aliases. Authored in oklch.
+   ============================================================ */
+
+:root {
+  /* ---- Paper ramp (warm neutrals, light) ---- */
+  --paper-0:  oklch(0.992 0.004 85);   /* pure raised surface  */
+  --paper-50: oklch(0.984 0.006 84);   /* app background       */
+  --paper-100:oklch(0.968 0.008 82);   /* sunken / code well   */
+  --paper-150:oklch(0.952 0.009 81);   /* deeper well          */
+  --paper-200:oklch(0.918 0.010 80);   /* hairline border      */
+  --paper-300:oklch(0.860 0.012 78);   /* strong border        */
+  --paper-400:oklch(0.760 0.012 75);   /* disabled edge        */
+
+  /* ---- Ink ramp (warm near-black text) ---- */
+  --ink-900: oklch(0.205 0.012 66);    /* primary text         */
+  --ink-700: oklch(0.345 0.013 66);    /* heading-secondary    */
+  --ink-600: oklch(0.452 0.013 66);    /* body-secondary       */
+  --ink-500: oklch(0.560 0.012 66);    /* tertiary / captions  */
+  --ink-400: oklch(0.660 0.010 66);    /* faint / placeholder  */
+
+  /* ---- Sapphire (brand / interactive) ---- */
+  --sapphire-700: oklch(0.380 0.110 256);
+  --sapphire-600: oklch(0.470 0.125 257); /* brand base         */
+  --sapphire-500: oklch(0.540 0.135 257); /* hover / active      */
+  --sapphire-100: oklch(0.930 0.040 256); /* tint surface        */
+  --sapphire-050: oklch(0.962 0.022 256); /* faint tint          */
+
+  /* ---- Amber (accent / highlight / "changed" marks) ---- */
+  --amber-600: oklch(0.620 0.135 66);
+  --amber-500: oklch(0.760 0.140 75);
+  --amber-100: oklch(0.930 0.060 82);
+  --amber-050: oklch(0.965 0.030 82);
+
+  /* ---- Diff & status semantics ---- */
+  --add-text:    oklch(0.430 0.110 150);
+  --add-surface: oklch(0.935 0.052 150);
+  --add-edge:    oklch(0.820 0.090 150);
+  --add-marker:  oklch(0.560 0.130 150);
+
+  --del-text:    oklch(0.470 0.150 25);
+  --del-surface: oklch(0.938 0.045 25);
+  --del-edge:    oklch(0.840 0.085 25);
+  --del-marker:  oklch(0.580 0.170 25);
+
+  --mod-text:    oklch(0.500 0.100 70);
+  --mod-surface: oklch(0.930 0.060 80);
+  --mod-edge:    oklch(0.830 0.085 80);
+
+  /* ============================================================
+     Semantic aliases — reference these in components
+     ============================================================ */
+
+  /* Surfaces */
+  --bg-app:        var(--paper-50);
+  --surface-card:  var(--paper-0);
+  --surface-well:  var(--paper-100);
+  --surface-sunk:  var(--paper-150);
+  --surface-tint:  var(--sapphire-050);
+
+  /* Text */
+  --text-strong:   var(--ink-900);
+  --text-body:     var(--ink-700);
+  --text-muted:    var(--ink-600);
+  --text-faint:    var(--ink-500);
+  --text-on-brand: var(--paper-0);
+
+  /* Lines */
+  --line-hairline: var(--paper-200);
+  --line-strong:   var(--paper-300);
+  --line-faint:    oklch(0.940 0.008 82);
+
+  /* Interactive / brand */
+  --brand:         var(--sapphire-600);
+  --brand-hover:   var(--sapphire-500);
+  --brand-press:   var(--sapphire-700);
+  --brand-tint:    var(--sapphire-100);
+  --link:          var(--sapphire-600);
+  --focus-ring:    var(--sapphire-500);
+
+  /* Accent */
+  --accent:        var(--amber-600);
+  --accent-tint:   var(--amber-100);
+
+  /* Status */
+  --ok-text:    var(--add-text);
+  --ok-surface: var(--add-surface);
+  --fail-text:  var(--del-text);
+  --fail-surface: var(--del-surface);
+
+  color-scheme: light;
+}
+
+/* ============================================================
+   Dark "ink" theme — opt in with [data-theme="dark"]
+   Warm charcoal paper, ivory ink, lifted sapphire.
+   ============================================================ */
+[data-theme="dark"] {
+  --paper-0:  oklch(0.255 0.010 66);
+  --paper-50: oklch(0.205 0.009 66);
+  --paper-100:oklch(0.300 0.011 66);
+  --paper-150:oklch(0.330 0.012 66);
+  --paper-200:oklch(0.380 0.012 66);
+  --paper-300:oklch(0.460 0.013 66);
+  --paper-400:oklch(0.560 0.012 66);
+
+  --ink-900: oklch(0.955 0.008 84);
+  --ink-700: oklch(0.880 0.009 84);
+  --ink-600: oklch(0.780 0.010 82);
+  --ink-500: oklch(0.680 0.011 80);
+  --ink-400: oklch(0.580 0.011 78);
+
+  --sapphire-600: oklch(0.720 0.110 255);
+  --sapphire-500: oklch(0.790 0.110 255);
+  --sapphire-700: oklch(0.640 0.115 256);
+  --sapphire-100: oklch(0.360 0.070 256);
+  --sapphire-050: oklch(0.300 0.045 256);
+
+  --amber-600: oklch(0.800 0.135 78);
+  --amber-100: oklch(0.380 0.075 75);
+
+  --add-text:    oklch(0.820 0.140 150);
+  --add-surface: oklch(0.330 0.060 152);
+  --add-edge:    oklch(0.460 0.090 150);
+  --add-marker:  oklch(0.760 0.150 150);
+
+  --del-text:    oklch(0.800 0.140 28);
+  --del-surface: oklch(0.340 0.075 26);
+  --del-edge:    oklch(0.480 0.110 26);
+  --del-marker:  oklch(0.760 0.170 28);
+
+  --mod-text:    oklch(0.840 0.130 82);
+  --mod-surface: oklch(0.350 0.060 78);
+  --mod-edge:    oklch(0.500 0.090 80);
+
+  --line-faint:  oklch(0.330 0.010 66);
+  --text-on-brand: oklch(0.205 0.010 66);
+
+  color-scheme: dark;
+}

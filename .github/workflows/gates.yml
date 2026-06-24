@@ -1,0 +1,24 @@
+# PII + build gates — the same checks the local hooks run, institutionalized.
+name: gates
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Gate 1: no residual PII in the tracked corpus
+      - name: sanitize --check
+        run: node sanitize/sanitize.js --check
+      # Gate 2: the site data pipeline builds clean (its own PII gate exits 1 on a hit)
+      - name: build site data
+        run: node site/scripts/build-data.js corpus --emit-json site/public/data
+      # Gate 3: changelog artifacts build clean from the committed snapshot + zh map
+      # (the zh bake lints translations: code spans/URLs verbatim, ** parity)
+      - name: build changelog data
+        run: node site/scripts/build-changelog.js && node site/scripts/build-changelog-zh.js

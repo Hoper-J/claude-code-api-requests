@@ -1,0 +1,23 @@
+<!-- @dsCard group="Type" viewport="700x300" name="UI — Hanken Grotesk" subtitle="Chrome: labels, buttons, metadata, overline" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../public/styles.css">
+<style>
+  body { padding: 28px 32px; background: var(--bg-app); }
+  .row { display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid var(--line-faint); padding: 11px 0; }
+  .row:last-child { border-bottom: 0; }
+  .tag { flex: 0 0 110px; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .ui { font-family: var(--font-ui); color: var(--text-strong); letter-spacing: var(--track-ui); }
+</style>
+</head>
+<body>
+  <div class="row"><span class="tag">overline / 12</span><span class="ui" style="font-size:var(--t-caption); text-transform:uppercase; letter-spacing:var(--track-over); font-weight:600; color:var(--text-muted);">System prompt</span></div>
+  <div class="row"><span class="tag">h3 / 19</span><span class="ui" style="font-size:var(--t-h3); font-weight:600;">Request metadata</span></div>
+  <div class="row"><span class="tag">body / 16</span><span class="ui" style="font-size:var(--t-body); font-weight:400; color:var(--text-body); line-height:1.5; max-width:48ch;">The language switcher preserves the version you're viewing.</span></div>
+  <div class="row"><span class="tag">ui / 14</span><span class="ui" style="font-size:var(--t-ui); font-weight:500;">Compare versions</span></div>
+  <div class="row"><span class="tag">sm / 13</span><span class="ui" style="font-size:var(--t-sm); font-weight:400; color:var(--text-muted);">Lazy-loaded · cached immutably</span></div>
+  <div class="row"><span class="tag">caption / 12</span><span class="ui" style="font-size:var(--t-caption); font-weight:500; color:var(--text-faint);">78 of 121 versions captured</span></div>
+</body>
+</html>

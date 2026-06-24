@@ -1,0 +1,37 @@
+# ── PII GATE ──────────────────────────────────────────────────────────────
+# corpus/ data files are sanitized in place by sanitize/sanitize.js
+# (idempotent): metadata.user_id same-shape-masked, emails → <email>,
+# operator home prefix → ~ (path tail kept), session/request uuid headers
+# masked, TLS fingerprints pseudonymized; Authorization is redacted by ccwrap
+# at capture time. full.json / status.json / variants/ / manifest.json are
+# therefore safe to commit.
+# Fresh captures re-introduce raw PII — capture.sh auto-runs sanitize at the
+# end of every run (--no-sanitize skips, debug only); the pre-commit hook
+# (.githooks/, enable once: git config core.hooksPath .githooks) backstops
+# with `sanitize.js --check`.
+# Capture-time local logs / wrapper scripts contain machine paths; keep ignored:
+/corpus/versions/*/install.log
+/corpus/versions/*/capture.stderr
+/corpus/versions/*/claude-wrapper.sh
+# Machine-local map of raw TLS fingerprints → group labels (contains the raw
+# values — never commit; if lost, new fingerprints simply get fresh numbers)
+/sanitize/.tls-map.json
+
+# build output / deps
+node_modules/
+dist/
+.DS_Store
+.playwright-mcp/
+# the offline single-file is committed at the repo root; its checksum sidecar is local-only
+/claude-code-api-requests-offline.html.sha256
+# Build output — regenerate from corpus/ (node site/scripts/build-data.js corpus [--emit-json site/public/data])
+/site/public/data.js
+/site/public/data/
+# Build output — regenerate from corpus/changelog/ + site/i18n/ (build-changelog.js, build-changelog-zh.js)
+/site/public/changelog-data.js
+/site/public/changelog-zh.js
+
+# capture engine scratch written under corpus/ (ROOT)
+/corpus/_cache/
+/corpus/_workdir/
+/corpus/run.log

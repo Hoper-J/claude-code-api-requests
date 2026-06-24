@@ -1,0 +1,76 @@
+/* ============================================================
+   Lineage — Base layer
+   Light-touch reset + element defaults wired to tokens.
+   Safe to ship: only sets sensible document-level defaults.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg-app);
+  color: var(--text-body);
+  font-family: var(--font-ui);
+  font-size: var(--t-body);
+  line-height: var(--lh-ui);
+  letter-spacing: var(--track-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+}
+
+/* Editorial voice */
+h1, h2, h3 {
+  font-family: var(--font-editorial);
+  color: var(--text-strong);
+  font-weight: var(--w-semibold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--track-tight);
+  margin: 0;
+  font-optical-sizing: auto;
+}
+
+p { margin: 0; }
+
+/* Corpus voice */
+code, pre, kbd, samp {
+  font-family: var(--font-corpus);
+  font-size: var(--t-code);
+  font-feature-settings: "liga" 0, "calt" 1;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  text-underline-offset: 0.15em;
+}
+a:hover { text-decoration: underline; }
+
+::selection {
+  background: var(--brand-tint);
+  color: var(--text-strong);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-shadow);
+  border-radius: var(--radius-1);
+}
+
+hr {
+  border: 0;
+  border-top: var(--bw-hair) solid var(--line-hairline);
+  margin: var(--space-6) 0;
+}
+
+/* Custom scrollbars for code wells */
+.lin-scroll::-webkit-scrollbar { height: 10px; width: 10px; }
+.lin-scroll::-webkit-scrollbar-thumb {
+  background: var(--paper-300);
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.lin-scroll::-webkit-scrollbar-track { background: transparent; }
