@@ -3214,6 +3214,26 @@
     "Improved `/install-github-app`: GitHub Actions workflow setup is now optional — you can install just the GitHub App and skip the workflow/secret steps": "改进 `/install-github-app`：GitHub Actions workflow 配置现在可选——你可以只装 GitHub App、跳过 workflow/secret 步骤",
     "Improved `/btw` with ←/→ arrow navigation to step through earlier answers": "改进 `/btw`：用 ←/→ 方向键逐条翻看之前的回答",
     "Improved `/plugin` to surface plugins you haven't used recently so you can clean them up": "改进 `/plugin`：突出显示你近期未使用的插件，便于清理",
-    "[VSCode] Fixed extension becoming unresponsive when resuming a large session": "[VSCode] 修复恢复大型会话时扩展无响应的问题"
+    "[VSCode] Fixed extension becoming unresponsive when resuming a large session": "[VSCode] 修复恢复大型会话时扩展无响应的问题",
+    "Added `/rewind` support for resuming a conversation from before `/clear` was run": "新增 `/rewind` 支持，可将对话恢复到运行 `/clear` 之前的状态",
+    "Fixed scroll position jumping to the bottom while reading earlier output during a streaming response": "修复流式响应期间查看较早输出时滚动位置跳到底部的问题",
+    "Fixed background agents resurrecting after being stopped — stopping an agent from the tasks panel is now permanent": "修复后台代理被停止后又复活的问题——现在从任务面板停止代理是永久性的",
+    "Fixed `/voice` showing a generic \"not available\" message when disabled by an organization's policy — it now explains the restriction": "修复 `/voice` 在被组织策略禁用时显示笼统的 \"not available\" 消息的问题——现在会说明该限制",
+    "Fixed `/login` URL opening truncated in Windows Terminal when it wraps across lines": "修复 `/login` URL 在 Windows Terminal 中跨行换行时打开被截断的问题",
+    "Fixed Cmd+click on links in fullscreen mode for Ghostty over ssh/tmux": "修复全屏模式下通过 ssh/tmux 使用 Ghostty 时链接 Cmd+click 的问题",
+    "Fixed `claude agents` sending builtin slash commands like `/usage` to background sessions as prompt text instead of showing a hint": "修复 `claude agents` 将 `/usage` 等内置斜杠命令作为提示文本发送给后台会话、而非显示提示的问题",
+    "Fixed `claude agents` job rows showing full filesystem paths for pasted images instead of the `[Image #N]` placeholder": "修复 `claude agents` 任务行对粘贴的图片显示完整文件系统路径、而非 `[Image #N]` 占位符的问题",
+    "Fixed hooks with comma-separated matchers (e.g. `\"Bash,PowerShell\"`) silently never firing": "修复使用逗号分隔匹配器（如 `\"Bash,PowerShell\"`）的钩子静默地从不触发的问题",
+    "Fixed `/permissions` Recently-denied tab: approving a denial now persists on close instead of being silently discarded": "修复 `/permissions` 的 Recently-denied 标签页的问题：现在批准一个拒绝项会在关闭时保留，而非被静默丢弃",
+    "Fixed the agent panel jumping by one row when scrolling the roster past the overflow cap": "修复滚动代理名单超过溢出上限时代理面板跳动一行的问题",
+    "Fixed the welcome splash art overflowing the default 80×24 macOS Terminal window": "修复欢迎启动画面图案在默认 80×24 的 macOS 终端窗口中溢出的问题",
+    "Fixed managed settings: `forceRemoteSettingsRefresh` now takes effect when set via MDM or file policy, and the fetch sends `Cache-Control: no-cache` to prevent proxies from serving stale responses": "修复托管设置的问题：`forceRemoteSettingsRefresh` 现在通过 MDM 或文件策略设置时会生效，并且拉取请求会发送 `Cache-Control: no-cache` 以防止代理返回过期响应",
+    "Improved sandbox network permission dialog: hosts you allow with \"Yes\" are now remembered for the rest of the session instead of re-prompting on every connection": "改进沙箱网络权限对话框：用 \"Yes\" 允许的主机现在会在本次会话剩余时间内被记住，而非每次连接都重新询问",
+    "Improved MCP server reliability: capability discovery (`tools/list`, `prompts/list`, `resources/list`) now retries transient network errors with short backoff": "改进 MCP 服务器可靠性：能力发现（`tools/list`、`prompts/list`、`resources/list`）现在会以短退避重试瞬时网络错误",
+    "Improved MCP OAuth: discovery and token requests now retry once after transient network errors, and headless environments skip the browser popup and go straight to the paste-the-URL prompt": "改进 MCP OAuth：发现和令牌请求现在会在瞬时网络错误后重试一次，并且无头环境会跳过浏览器弹窗、直接进入粘贴 URL 的提示",
+    "Improved MCP error messages: HTTP 404 errors now show the URL and point to your MCP config": "改进 MCP 错误消息：HTTP 404 错误现在会显示 URL 并指向你的 MCP 配置",
+    "Improved vim mode prompt-history search (NORMAL `/`) to hint how to reach slash commands": "改进 vim 模式的提示历史搜索（NORMAL `/`）以提示如何使用斜杠命令",
+    "Reduced CPU usage during streaming responses by ~37% by coalescing text updates to 100ms": "通过将文本更新合并到 100ms，将流式响应期间的 CPU 占用降低约 37%",
+    "Reduced long-session memory growth from terminal output cache": "降低长会话中终端输出缓存导致的内存增长"
   }
 }
