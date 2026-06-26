@@ -5,7 +5,7 @@
  "regime": "native",
  "claude_bin": "~/claude-code-api-requests/corpus/versions/2.1.185/claude-wrapper.sh",
  "install_ok": true,
- "install_seconds": 5,
+ "install_seconds": 2,
  "capture_exit": 0,
  "http_status": 200,
  "ja3": "<ja3#6>",
@@ -16,7 +16,7 @@
  "is_quota_probe": false,
  "is_main_inference": true,
  "captured_at": "2026-06-22",
- "duration_seconds": 13,
+ "duration_seconds": 10,
  "pruned": true,
  "error": ""
 }

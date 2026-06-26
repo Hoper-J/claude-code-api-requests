@@ -79,14 +79,28 @@ cp -f "$ARTIFACTS/memory-snapshot/"*.md "$MEM_DST/" 2>/dev/null || true
 # --help just prints the engine usage: skip the sanitize tail (nothing was captured).
 SANITIZE=1
 HELP=0
+PROFILE=official          # corpus default; the ambient CCWRAP_PROFILE is deliberately ignored
 ARGS=()
+WANT_PROFILE=0
 for a in "$@"; do
-  if [ "$a" = "--no-sanitize" ]; then SANITIZE=0; else ARGS+=("$a"); fi
-  if [ "$a" = "--help" ] || [ "$a" = "-h" ]; then HELP=1; fi
+  if [ "$WANT_PROFILE" = 1 ]; then PROFILE="$a"; WANT_PROFILE=0; continue; fi
+  case "$a" in
+    --no-sanitize) SANITIZE=0 ;;
+    --profile)     WANT_PROFILE=1 ;;        # explicit per-run override (testing only)
+    --help|-h)     HELP=1; ARGS+=("$a") ;;
+    *)             ARGS+=("$a") ;;
+  esac
 done
 
 export CLAUDE_CONFIG_DIR="$CFG"
-echo "[capture] corpus=$CORPUS  config=$CFG  workdir=$WORKDIR  (real ~/.claude untouched)"
+# Captures default to the official Anthropic profile (passthrough, claude's own OAuth).
+# The operator's default/ambient ccwrap profile may be a third-party gateway whose auth
+# override strips the oauth-2025-04-20 beta and yields a non-faithful request — so we set
+# CCWRAP_PROFILE explicitly here, IGNORING any ambient value, to keep an interactively-set
+# profile from silently leaking into the corpus. Override per-run for testing only with
+# `capture.sh --profile <name>` (do NOT commit non-official captures).
+export CCWRAP_PROFILE="$PROFILE"
+echo "[capture] corpus=$CORPUS  config=$CFG  workdir=$WORKDIR  profile=$CCWRAP_PROFILE  (real ~/.claude untouched)"
 rc=0
 bash "$HERE/capture-version-matrix.sh" --root "$CORPUS" --workdir "$WORKDIR" ${ARGS[@]+"${ARGS[@]}"} || rc=$?
 
