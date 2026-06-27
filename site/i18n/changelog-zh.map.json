@@ -3249,6 +3249,18 @@
     "Improved background agents: the launch result no longer instructs Claude to \"end your response\" — it keeps working on other tasks while the agent runs": "改进后台代理：启动结果不再指示 Claude \"end your response\"——代理运行时它会继续处理其他任务",
     "Improved MCP `headersHelper` auth: the helper now re-runs and reconnects automatically when a tool call returns 401/403": "改进 MCP `headersHelper` 认证：当工具调用返回 401/403 时，helper 现在会自动重新运行并重连",
     "Improved plugin auto-rename: marketplace `renames` maps are now followed automatically, updating your settings to the new name": "改进插件自动重命名：现在会自动遵循市场的 `renames` 映射，把你的设置更新为新名称",
-    "Improved `/add-dir` message when the directory is already a working directory": "改进当目录已经是工作目录时 `/add-dir` 的提示信息"
+    "Improved `/add-dir` message when the directory is already a working directory": "改进当目录已经是工作目录时 `/add-dir` 的提示信息",
+    "Added `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` to disable mouse click/drag/hover in fullscreen mode while keeping wheel scroll": "新增 `CLAUDE_CODE_DISABLE_MOUSE_CLICKS`，可在全屏模式下禁用鼠标点击/拖拽/悬停，同时保留滚轮滚动",
+    "Fixed hook matchers with hyphenated identifiers (e.g. `code-reviewer`, `mcp__brave-search`) accidentally substring-matching — they now exact-match. Use `mcp__brave-search__.*` to match all tools from a hyphenated MCP server.": "修复带连字符标识符的钩子匹配器（如 `code-reviewer`、`mcp__brave-search`）意外按子串匹配的问题——现在改为精确匹配。要匹配某个带连字符的 MCP 服务器的所有工具，请使用 `mcp__brave-search__.*`。",
+    "Fixed voice dictation on macOS capturing silence in long-running sessions after the default input device changes": "修复 macOS 上长时间运行的会话中，默认输入设备变更后语音听写采集到静音的问题",
+    "Fixed voice dictation auto-submit never firing for languages written without spaces (Japanese, Chinese, Thai)": "修复语音听写自动提交在不使用空格分词的语言（日语、中文、泰语）中从不触发的问题",
+    "Fixed external plugins enabled only by project `.claude/settings.json` not requiring explicit install consent on every loader path": "修复仅由项目 `.claude/settings.json` 启用的外部插件未在每条加载路径上都要求显式安装确认的问题",
+    "Fixed `/plugin` Enable/Disable not working when a plugin's `plugin.json` `name` differs from its marketplace entry name": "修复当插件的 `plugin.json` 中 `name` 与其市场条目名称不一致时 `/plugin` 启用/禁用失效的问题",
+    "Fixed background jobs disappearing from `claude agents` or losing data when written by a newer Claude Code version": "修复后台任务由较新版本的 Claude Code 写入时从 `claude agents` 中消失或丢失数据的问题",
+    "Fixed reopening a crashed background task showing a blank screen for up to 5 seconds instead of its restart": "修复重新打开已崩溃的后台任务时显示长达 5 秒的空白屏幕，而非其重启界面的问题",
+    "Fixed background agent daemons running unreachable when the control socket fails to start, blocking restarts": "修复控制套接字启动失败时后台代理守护进程虽在运行却不可达，导致无法重启的问题",
+    "Improved voice mode on Linux: now distinguishes \"no microphone\" from \"SoX not installed\" when SoX is present but no audio capture device exists": "改进 Linux 上的语音模式：当 SoX 已安装但不存在音频采集设备时，现在能区分 \"no microphone\" 与 \"SoX not installed\"",
+    "Improved `claude agents` completed list to fill available vertical space; on short terminals the header compacts so live sessions stay visible": "改进 `claude agents` 的已完成列表以填满可用的纵向空间；在较矮的终端上页眉会压缩，从而让进行中的会话保持可见",
+    "Improved Remote session startup with a provisioning checklist while the container starts": "改进 Remote 会话启动：在容器启动期间显示置备清单"
   }
 }
