@@ -85,9 +85,17 @@ const RE_SKANT = /sk-ant-[A-Za-z0-9_-]{8,}/g;
    Masking real capture dates also kills false context_body_changed deltas
    between versions captured on different days. */
 const RE_TODAY = /(Today's date(?: is|:)) (20\d\d-\d\d-\d\d)/g;
+/* The injected "today" is the operator's LOCAL date, while capDay comes from the
+   UTC capture stamp (status.captured_at). A capture that straddles midnight can
+   leave them one calendar day apart, so mask capDay AND its two neighbours —
+   corpus-authored example dates (e.g. 2025-07-01) are years off and stay. */
+function captureDays(capDay) {
+  const base = Date.parse(capDay + "T00:00:00Z");
+  return new Set([-1, 0, 1].map((n) => new Date(base + n * 86400000).toISOString().slice(0, 10)));
+}
 function sanitizeStr(s, capDay) {
   let out = s.replace(RE_HOME, "~").replace(RE_MAIL, "<email>").replace(RE_SKANT, "<token>");
-  if (capDay) out = out.replace(RE_TODAY, (m, p1, d) => d === capDay ? `${p1} <date>` : m);
+  if (capDay) { const days = captureDays(capDay); out = out.replace(RE_TODAY, (m, p1, d) => days.has(d) ? `${p1} <date>` : m); }
   return out;
 }
 const MASKED = /^<[^>]+>(\(\d+ chars\))?$/;
@@ -210,8 +218,10 @@ function findLeaks(str, file, capDay) {
   for (const m of str.matchAll(/"(X-Claude-Code-Session-Id|X-Client-Request-Id)"\s*:\s*"(?!<)/gi)) leaks.push(`${file}: raw ${m[1]} header`);
   for (const m of str.matchAll(/"(ja3|ja4|peetprint|clienthello_hex)"\s*:\s*"(?!<)/g)) leaks.push(`${file}: raw tls ${m[1]}`);
   if (/"tls_groups"\s*:\s*\{\s*"(?!<)/.test(str)) leaks.push(`${file}: raw tls_groups key`);
-  if (capDay && str.includes(`Today's date is ${capDay}`)) leaks.push(`${file}: unmasked capture date`);
-  if (capDay && str.includes(`Today's date: ${capDay}`)) leaks.push(`${file}: unmasked capture date`);
+  if (capDay) for (const d of captureDays(capDay)) {
+    if (str.includes(`Today's date is ${d}`)) leaks.push(`${file}: unmasked capture date`);
+    if (str.includes(`Today's date: ${d}`)) leaks.push(`${file}: unmasked capture date`);
+  }
   for (const m of str.matchAll(/"(captured_at|generated_at|started_at)"\s*:\s*"20\d\d-\d\d-\d\dT/g)) leaks.push(`${file}: full-precision ${m[1]}`);
   return leaks;
 }

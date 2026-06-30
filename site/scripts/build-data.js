@@ -73,13 +73,20 @@ const os = require("os");
 const reEsc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const RE_OP_HOME = new RegExp(reEsc(os.homedir()) + "(?=/|\\b)", "g");
 let CAP_DAY = null; // capture day of the version being parsed; set by the walk
+/* capDay ±1 day: the injected local "today" can differ from the UTC capture
+   stamp by a calendar day when a capture straddles midnight (shape-identical to
+   captureDays() in ../../sanitize/sanitize.js — keep both in sync). */
+function captureDays(capDay) {
+  const base = Date.parse(capDay + "T00:00:00Z");
+  return new Set([-1, 0, 1].map((n) => new Date(base + n * 86400000).toISOString().slice(0, 10)));
+}
 function sanitize(s) {
   if (s == null) return s;
   let out = String(s)
     .replace(RE_OP_HOME, "~")
     .replace(/[A-Za-z0-9._%+-]+@(?!anthropic\.com\b)[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "<email>")
     .replace(/sk-ant-[A-Za-z0-9_\-]+/g, "<token>");
-  if (CAP_DAY) out = out.replace(/(Today's date(?: is|:)) (20\d\d-\d\d-\d\d)/g, (m, p1, d) => d === CAP_DAY ? `${p1} <date>` : m);
+  if (CAP_DAY) { const days = captureDays(CAP_DAY); out = out.replace(/(Today's date(?: is|:)) (20\d\d-\d\d-\d\d)/g, (m, p1, d) => days.has(d) ? `${p1} <date>` : m); }
   return out;
 }
 function sanitizeJSON(obj) { return obj == null ? null : JSON.parse(sanitize(JSON.stringify(obj))); }
