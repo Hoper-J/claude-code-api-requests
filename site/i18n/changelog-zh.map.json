@@ -3288,6 +3288,7 @@
     "Reduced per-frame rendering work in the terminal UI by skipping no-op subtree walks during streaming": "通过在流式输出期间跳过无操作的子树遍历，降低了终端 UI 每帧的渲染工作量",
     "The streaming idle watchdog is now on by default for all providers — it aborts and retries when a response stream produces no events for 5 minutes. Set `CLAUDE_ENABLE_STREAM_WATCHDOG=0` to disable.": "流式空闲看门狗现在对所有提供方默认开启——当响应流在 5 分钟内未产生任何事件时，它会中止并重试。设置 `CLAUDE_ENABLE_STREAM_WATCHDOG=0` 可禁用。",
     "Remote Control is now disabled when `ANTHROPIC_BASE_URL` points at a non-Anthropic host, matching the existing behavior under `CLAUDE_CODE_USE_BEDROCK`/`_VERTEX`/`_FOUNDRY`": "当 `ANTHROPIC_BASE_URL` 指向非 Anthropic 主机时，Remote Control 现在会被禁用，与 `CLAUDE_CODE_USE_BEDROCK`/`_VERTEX`/`_FOUNDRY` 下的现有行为一致",
-    "Changed opening the agents view from a foreground session to require a single `←` press instead of two, matching the behavior in background sessions": "将从前台会话打开 agents 视图所需的操作从按两次 `←` 改为按一次，与后台会话中的行为一致"
+    "Changed opening the agents view from a foreground session to require a single `←` press instead of two, matching the behavior in background sessions": "将从前台会话打开 agents 视图所需的操作从按两次 `←` 改为按一次，与后台会话中的行为一致",
+    "Introducing Claude Sonnet 5: now the default model in Claude Code, with a native 1M-token context window and promotional pricing of $2/$10 per Mtok through August 31. Update to version 2.1.197 for access. https://www.anthropic.com/news/claude-sonnet-5": "推出 Claude Sonnet 5：现已成为 Claude Code 的默认模型，具备原生 1M token 上下文窗口，并提供每 Mtok $2/$10 的促销定价，持续至 8 月 31 日。更新到 2.1.197 版本即可使用。https://www.anthropic.com/news/claude-sonnet-5"
   }
 }
