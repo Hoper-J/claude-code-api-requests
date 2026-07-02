@@ -451,7 +451,11 @@ emit_variant_status() {
   local vdir="$1" v="$2" slug="$3" model="$4"
   local vf="$vdir/variants/$slug.json" cf="$vdir/full.json"
   [ -f "$cf" ] || cf=/dev/null   # no canonical -> $C becomes [] -> diff is skipped
-  jq -n --slurpfile V "$vf" --slurpfile C "$cf" --arg v "$v" --arg slug "$slug" --arg model "$model" '
+  # captured_at: the variant's OWN capture day. The date sanitizer masks the
+  # injected "Today's date" against the capture file's sibling status.json, so
+  # a variant captured later than its canonical needs its own stamp.
+  local at; at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  jq -n --slurpfile V "$vf" --slurpfile C "$cf" --arg v "$v" --arg slug "$slug" --arg model "$model" --arg at "$at" '
     def betas($r): (($r.request.headers["Anthropic-Beta"] // [])
                     | (if type=="array" then (.[0] // "") else tostring end)
                     | split(",") | map(select(length>0)));
@@ -460,6 +464,7 @@ emit_variant_status() {
       and (($vb.messages|length)==1) and ($vb.messages[0].content=="quota") ) as $isq |
     {
       variant_id:$slug, base_version:$v, pinned_model:$model, is_default:false,
+      captured_at:$at,
       model_in_request:$vb.model, http_status:$vv.response.status,
       ja3:$vv.tls.ja3, ja4:$vv.tls.ja4,
       system_blocks:($vb.system|length), tools_count:($vb.tools|length),
