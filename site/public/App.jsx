@@ -245,11 +245,11 @@ function TimelineRow({ row, t, go, last }) {
             : <DeltaSummary delta={row.delta} labels={t.delta} />}
         </span>
         <span style={{ display:"flex", alignItems:"center", gap:12, justifySelf:"end" }}>
-          {/* Variant badges: up to 2 shown (data layer orders real alternate
+          {/* Variant badges: up to 3 shown (data layer orders real alternate
               models first), the rest collapse into +N → explorer's CAPTURES. */}
           {!fail && row.variants && row.variants.length > 0 && (()=>{
             const all = (DATA.VERSIONS[row.version]||{}).variants || [];
-            const shown = all.slice(0, 2), hidden = all.slice(2);
+            const shown = all.slice(0, 3), hidden = all.slice(3);
             const vbStyle = { pointerEvents:"auto", cursor:"pointer", display:"inline-flex", border:"none", background:"none", padding:0 };
             const dim = (e)=>{ e.currentTarget.style.opacity="0.72"; }, undim = (e)=>{ e.currentTarget.style.opacity="1"; };
             return (<React.Fragment>
