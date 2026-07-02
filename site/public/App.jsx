@@ -245,15 +245,30 @@ function TimelineRow({ row, t, go, last }) {
             : <DeltaSummary delta={row.delta} labels={t.delta} />}
         </span>
         <span style={{ display:"flex", alignItems:"center", gap:12, justifySelf:"end" }}>
-          {!fail && row.variants && row.variants.length > 0 && (
-            <button onClick={()=>go({ view:"explorer", version:row.version, capture:row.variants[0] })}
-              title={`${t.captures} · ${shortModel(((DATA.VERSIONS[row.version]||{}).variants||[{}])[0].model_in_request)}`}
-              style={{ pointerEvents:"auto", cursor:"pointer", display:"inline-flex", border:"none", background:"none", padding:0 }}
-              onMouseEnter={(e)=>{ e.currentTarget.style.opacity="0.72"; }}
-              onMouseLeave={(e)=>{ e.currentTarget.style.opacity="1"; }}>
-              <Badge tone="brand" mono>⎇ {shortModel(((DATA.VERSIONS[row.version]||{}).variants||[{}])[0].model_in_request)}</Badge>
-            </button>
-          )}
+          {/* Variant badges: up to 2 shown (data layer orders real alternate
+              models first), the rest collapse into +N → explorer's CAPTURES. */}
+          {!fail && row.variants && row.variants.length > 0 && (()=>{
+            const all = (DATA.VERSIONS[row.version]||{}).variants || [];
+            const shown = all.slice(0, 2), hidden = all.slice(2);
+            const vbStyle = { pointerEvents:"auto", cursor:"pointer", display:"inline-flex", border:"none", background:"none", padding:0 };
+            const dim = (e)=>{ e.currentTarget.style.opacity="0.72"; }, undim = (e)=>{ e.currentTarget.style.opacity="1"; };
+            return (<React.Fragment>
+              {shown.map(va => (
+                <button key={va.id} onClick={()=>go({ view:"explorer", version:row.version, capture:va.id })}
+                  title={`${t.captures} · ${shortModel(va.model_in_request)}`}
+                  style={vbStyle} onMouseEnter={dim} onMouseLeave={undim}>
+                  <Badge tone="brand" mono>⎇ {shortModel(va.model_in_request)}</Badge>
+                </button>
+              ))}
+              {hidden.length > 0 && (
+                <button onClick={()=>go({ view:"explorer", version:row.version })}
+                  title={`${t.captures} · ${hidden.map(va=>shortModel(va.model_in_request)).join(", ")}`}
+                  style={vbStyle} onMouseEnter={dim} onMouseLeave={undim}>
+                  <Badge tone="brand" mono>+{hidden.length}</Badge>
+                </button>
+              )}
+            </React.Fragment>);
+          })()}
           {!fail && <Badge tone="neutral" mono>{row.tools_count} {t.toolsCount}</Badge>}
           {!fail && <Icon name="chevR" size={16} style={{ color: hover ? "var(--brand)" : "var(--text-faint)" }} />}
         </span>
@@ -437,7 +452,9 @@ function ExplorerView({ t, locale, version, capture, go, backRoute }) {
           <SegmentedControl size="sm" value={String(variantIdx)} onChange={v=>setVariantIdx(Number(v))}
             options={[
               { value:"-1", label:`${shortModel(detail.model)} · ${t.defaultCapture}` },
-              ...detail.variants.map((va,i)=>({ value:String(i), label: shortModel(va.model_in_request) })),
+              // A variant pinned to the default model itself reads "· pinned",
+              // so it can't be confused with the default capture next to it.
+              ...detail.variants.map((va,i)=>({ value:String(i), label: shortModel(va.model_in_request) + (va.model_in_request === detail.model ? ` · ${t.pinnedCapture}` : "") })),
             ]} />
         </div>
       )}

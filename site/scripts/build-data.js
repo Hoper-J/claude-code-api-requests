@@ -289,6 +289,11 @@ for (const v of versions) {
         detail: det,
       });
     }
+    /* Informative-first order: variants pinned to a DIFFERENT model before ones
+       pinned to the default model itself — anything reading variants[0] (e.g.
+       the timeline badge) gets a real alternate model, not a duplicate. */
+    rec.variants.sort((a, b) =>
+      ((a.model_in_request === rec.model) - (b.model_in_request === rec.model)) || a.id.localeCompare(b.id));
     if (!rec.variants.length) delete rec.variants;
   }
   parsed[v] = rec;
