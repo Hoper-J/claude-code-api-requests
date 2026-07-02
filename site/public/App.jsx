@@ -26,6 +26,23 @@ function Wordmark({ size = 28 }) {
   );
 }
 
+/* ---------- Skip link (keyboard users; long corpus pages) ---------- */
+function SkipLink({ t }) {
+  const [vis, setVis] = React.useState(false);
+  // Focus #main programmatically — a plain href="#main" would clobber the
+  // route hash (#/en/…) and navigate the router away.
+  const jump = (e)=>{ e.preventDefault(); const m = document.getElementById("main"); if (m) { m.focus(); m.scrollIntoView(); } };
+  return (
+    <a href="#main" onClick={jump} onFocus={()=>setVis(true)} onBlur={()=>setVis(false)}
+      style={{ position:"fixed", top:12, left:12, zIndex:60, padding:"9px 14px", borderRadius:"var(--radius-2)",
+        background:"var(--surface-card)", border:"1px solid var(--line-strong)", boxShadow:"var(--shadow-pop)",
+        fontFamily:"var(--font-ui)", fontSize:"var(--t-sm)", color:"var(--text-strong)",
+        transform: vis ? "none" : "translateY(-200%)" }}>
+      {t.skipToContent}
+    </a>
+  );
+}
+
 /* ---------- Header ---------- */
 function Header({ t, route, go, locale, setLocale, theme, setTheme, onSearch }) {
   return (
@@ -197,14 +214,20 @@ function TimelineGap({ count, from, to, t }) {
 function TimelineRow({ row, t, go, last }) {
   const fail = row.result === "fail";
   const [hover, setHover] = React.useState(false);
+  /* Stretched-button pattern: the row's primary action is a full-bleed sibling
+     button UNDER the visual content (interactive elements must not nest), and
+     the variant shortcut is a real sibling button layered back on top — both
+     keyboard-reachable, in DOM order row → variant. */
   return (
-    <li>
+    <li style={{ position:"relative" }}>
       <button disabled={fail} onClick={()=>go({ view:"explorer", version:row.version })}
+        aria-label={fail ? `${row.version} — ${t.noCapture}` : `${row.version} · ${shortModel(row.model)}`}
         onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}
-        style={{ position:"relative", display:"grid", gridTemplateColumns:"150px 120px 1fr auto", alignItems:"center", gap:18,
-          width:"100%", textAlign:"left", padding:"15px 14px 15px 30px", border:"none", borderRadius:"var(--radius-3)",
+        style={{ position:"absolute", inset:0, width:"100%", border:"none", borderRadius:"var(--radius-3)",
           background: hover && !fail ? "var(--surface-well)" : "transparent", cursor: fail ? "default" : "pointer",
-          opacity: fail ? 0.55 : 1, transition:"background var(--dur-2) var(--ease-standard)" }}>
+          transition:"background var(--dur-2) var(--ease-standard)" }} />
+      <div style={{ position:"relative", pointerEvents:"none", display:"grid", gridTemplateColumns:"150px 120px 1fr auto", alignItems:"center", gap:18,
+        width:"100%", textAlign:"left", padding:"15px 14px 15px 30px", opacity: fail ? 0.55 : 1 }}>
         {/* spine */}
         <span style={{ position:"absolute", left:14, top:0, bottom: last?"50%":0, width:2, background:"var(--line-hairline)" }} />
         <span style={{ position:"absolute", left:9, top:"50%", transform:"translateY(-50%)", width:12, height:12, borderRadius:"50%",
@@ -223,18 +246,18 @@ function TimelineRow({ row, t, go, last }) {
         </span>
         <span style={{ display:"flex", alignItems:"center", gap:12, justifySelf:"end" }}>
           {!fail && row.variants && row.variants.length > 0 && (
-            <span onClick={(e)=>{ e.stopPropagation(); go({ view:"explorer", version:row.version, capture:row.variants[0] }); }}
+            <button onClick={()=>go({ view:"explorer", version:row.version, capture:row.variants[0] })}
               title={`${t.captures} · ${shortModel(((DATA.VERSIONS[row.version]||{}).variants||[{}])[0].model_in_request)}`}
-              style={{ cursor:"pointer", display:"inline-flex" }}
+              style={{ pointerEvents:"auto", cursor:"pointer", display:"inline-flex", border:"none", background:"none", padding:0 }}
               onMouseEnter={(e)=>{ e.currentTarget.style.opacity="0.72"; }}
               onMouseLeave={(e)=>{ e.currentTarget.style.opacity="1"; }}>
               <Badge tone="brand" mono>⎇ {shortModel(((DATA.VERSIONS[row.version]||{}).variants||[{}])[0].model_in_request)}</Badge>
-            </span>
+            </button>
           )}
           {!fail && <Badge tone="neutral" mono>{row.tools_count} {t.toolsCount}</Badge>}
           {!fail && <Icon name="chevR" size={16} style={{ color: hover ? "var(--brand)" : "var(--text-faint)" }} />}
         </span>
-      </button>
+      </div>
     </li>
   );
 }
@@ -1404,6 +1427,10 @@ function SearchOverlay({ t, onClose, go }) {
   const [q, setQ] = React.useState("");
   const inputRef = React.useRef(null);
   React.useEffect(()=>{ inputRef.current && inputRef.current.focus(); }, []);
+  // Entry transition driven by the motion tokens (collapse to 0ms under
+  // prefers-reduced-motion via the token override).
+  const [entered, setEntered] = React.useState(false);
+  React.useEffect(()=>{ const id = requestAnimationFrame(()=>setEntered(true)); return ()=>cancelAnimationFrame(id); }, []);
 
   // Reverse index over UNIQUE blocks/tools → newest version using each (built once)
   const usage = React.useMemo(()=>{
@@ -1435,9 +1462,11 @@ function SearchOverlay({ t, onClose, go }) {
 
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:50, background:"color-mix(in oklch, var(--ink-900) 32%, transparent)",
-      backdropFilter:"blur(2px)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"12vh 20px 20px" }}>
+      backdropFilter:"blur(2px)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"12vh 20px 20px",
+      opacity: entered ? 1 : 0, transition:"opacity var(--dur-2) var(--ease-standard)" }}>
       <div onClick={(e)=>e.stopPropagation()} style={{ width:"100%", maxWidth:680, background:"var(--surface-card)", border:"1px solid var(--line-hairline)",
-        borderRadius:"var(--radius-4)", boxShadow:"var(--shadow-pop)", overflow:"hidden" }}>
+        borderRadius:"var(--radius-4)", boxShadow:"var(--shadow-pop)", overflow:"hidden",
+        transform: entered ? "none" : "translateY(8px) scale(0.985)", transition:"transform var(--dur-2) var(--ease-standard)" }}>
         <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 18px", borderBottom:"1px solid var(--line-hairline)" }}>
           <Icon name="search" size={18} style={{ color:"var(--text-faint)" }} />
           <input ref={inputRef} value={q} onChange={(e)=>setQ(e.target.value)} placeholder={t.searchPlaceholder}
@@ -1588,7 +1617,9 @@ function App() {
   // file:// configurations) — reads must be as guarded as the writes below.
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const [locale, setLocale] = React.useState(init.locale || lsGet("lineage-locale") || "en");
-  const [theme, setTheme] = React.useState(lsGet("lineage-theme") || "light");
+  // First visit follows the OS scheme; an explicit toggle persists and wins.
+  const [theme, setTheme] = React.useState(lsGet("lineage-theme") ||
+    (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
   const [search, setSearch] = React.useState(false);
   const t = L10N[locale];
 
@@ -1612,9 +1643,10 @@ function App() {
   const go = (r)=>{ setRoute(r); window.scrollTo({ top:0 }); };
 
   return (
-    <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column" }}>
+    <div style={{ minHeight:"100dvh", display:"flex", flexDirection:"column" }}>
+      <SkipLink t={t} />
       <Header t={t} route={route} go={go} locale={locale} setLocale={setLocale} theme={theme} setTheme={setTheme} onSearch={()=>setSearch(true)} />
-      <main style={{ flex:1 }}>
+      <main id="main" tabIndex={-1} style={{ flex:1, outline:"none" }}>
         {route.view==="timeline" && <TimelineView t={t} go={go} />}
         {route.view==="explorer" && <ExplorerView t={t} locale={locale} version={route.version} capture={route.capture} go={go} backRoute={cameFromCompare} />}
         {route.view==="compare" && <CompareView t={t} locale={locale} from={route.from} to={route.to} go={go} focus={route.focus} />}
