@@ -267,6 +267,12 @@ write_wrapper() {  # write_wrapper VDIR REGIME EXEC...  -> path to wrapper
   local wf="$vdir/claude-wrapper.sh"
   {
     echo '#!/bin/sh'
+    # A plain user's `claude -p` has no host-managed-provider contract. ccwrap
+    # injects CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST into its child, and from
+    # 2.1.198 that flag makes the client skip its own stored OAuth entirely
+    # ("Not logged in"). Unset it so the capture authenticates like a real
+    # standalone run (<=2.1.197 ignored the flag, so this changes nothing there).
+    echo 'unset CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST'
     if [ "$regime" = native ]; then printf 'exec %q "$@"\n' "$1"
     else printf 'exec %q %q "$@"\n' "$1" "$2"; fi
   } > "$wf"
