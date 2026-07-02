@@ -1,0 +1,34 @@
+{
+ "variant_id": "claude-fable-5-1m",
+ "base_version": "2.1.196",
+ "pinned_model": "claude-fable-5[1m]",
+ "is_default": false,
+ "captured_at": "2026-07-02",
+ "model_in_request": "claude-fable-5",
+ "http_status": 200,
+ "ja3": "<ja3#6>",
+ "ja4": "<ja4#6>",
+ "system_blocks": 4,
+ "tools_count": 10,
+ "is_quota_probe": false,
+ "is_main_inference": true,
+ "model_axis_diff": {
+  "vs": "claude-opus-4-8 (default)",
+  "model": {
+   "from": "claude-opus-4-8",
+   "to": "claude-fable-5"
+  },
+  "fallbacks_added": true,
+  "beta_added": [
+   "server-side-fallback-2026-06-01",
+   "fallback-credit-2026-06-01"
+  ],
+  "beta_removed": [
+   "context-1m-2025-08-07"
+  ],
+  "body_keys_added": [
+   "fallbacks"
+  ],
+  "body_keys_removed": []
+ }
+}
