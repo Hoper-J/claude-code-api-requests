@@ -2,7 +2,7 @@
 
 **English** | [中文](findings.zh-CN.md)
 
-**Current corpus**: counts and slicing go by `manifest.json`'s `.counts`; the early versions (before fable-5) were captured on 2026-06-10. Default model chain sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8, with `max_tokens` raised at 2.1.76(32000) → 2.1.77(64000).
+**Current corpus**: counts and slicing go by `manifest.json`'s `.counts`; the early versions (before fable-5) were captured on 2026-06-10. Default model chain sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8, with `max_tokens` raised at 2.1.76(32000) → 2.1.77(64000). The built-in tool set gains `ReportFindings` at 2.1.196 (version-gated: back-to-back re-captures of 2.1.195/2.1.196 under identical conditions reproduce the boundary). The `# userEmail` context block appears from 2.1.108 and is present continuously after.
 
 ---
 
@@ -48,7 +48,7 @@ The form of the MCP tool `mcp__example__echo` changes by version, in two stages:
 >
 > ![With MCP not connected, the mcp__* tools in the request body are replaced](assets/mcp-not-connected.png)
 >
-> This shows up in versions 2.1.153-2.1.173 of the current corpus.
+> This shows up in versions 2.1.153-2.1.173 of the current corpus, and in a few pinned-model variants captured while the race was lost (claude-fable-5[1m] at 2.1.170/2.1.172/2.1.173, claude-sonnet-4-5 at 2.1.197).
 
 ### Evolution of the injected-message structure
 The form of `messages[]` currently comes in four generations:
@@ -87,7 +87,6 @@ Passing `--system-prompt-file <file>` **replaces the default agent-instruction b
 | **MCP shows still-connecting** | the **race** between the MCP connection and the first-request build (capture timing) |
 | **an extra agent-types injection block** | the server-side GrowthBook flag `tengu_agent_list_attach` **×** a client code path (≥2.1.84), present only when both hold. Same build: absent 6/11, present 6/16 |
 | **the deferred-tools list drifts by capture conditions** (`RemoteTrigger`↔`LSP` swap, `DesignSync` appears…) | which deferred tools are enumerated = (the server flags currently on) × (the client version) |
-| **`# userEmail`** | same conditions, 2.1.183: present captured 6/19, absent captured 6/22 |
 
 > **agent-types injection block**
 >

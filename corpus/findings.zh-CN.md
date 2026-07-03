@@ -2,7 +2,7 @@
 
 [English](findings.md) | **中文**
 
-**当前语料**：计数与切分以 `manifest.json` 的 `.counts` 为准，早期版本（fable-5 之前）捕获于 2026-06-10。默认模型链 sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8，`max_tokens` 在 2.1.76(32000) → 2.1.77(64000) 抬升。
+**当前语料**：计数与切分以 `manifest.json` 的 `.counts` 为准，早期版本（fable-5 之前）捕获于 2026-06-10。默认模型链 sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8，`max_tokens` 在 2.1.76(32000) → 2.1.77(64000) 抬升。内置工具集在 2.1.196 新增 `ReportFindings`（版本门控：相同条件下对 2.1.195/2.1.196 背靠背重抓可复现该边界）。`# userEmail` 上下文块自 2.1.108 起出现，其后连续存在。
 
 ---
 
@@ -48,7 +48,7 @@ MCP 工具 `mcp__example__echo` 的形态随版本变化，有两个阶段：
 >
 > ![MCP 未连接时，请求体里的 mcp__* 工具被替换](assets/mcp-not-connected.png)
 >
-> 该现象出现在当前捕获语料的 2.1.153-2.1.173 版本中。
+> 该现象出现在当前捕获语料的 2.1.153-2.1.173 版本中，也见于少数竞速失利时捕获的钉定模型变体（2.1.170/2.1.172/2.1.173 的 claude-fable-5[1m]、2.1.197 的 claude-sonnet-4-5）。
 
 ### 注入消息的结构演变
 `messages[]` 的形态当前分四代：
@@ -87,7 +87,6 @@ MCP 工具 `mcp__example__echo` 的形态随版本变化，有两个阶段：
 | **MCP 显示 still-connecting** | MCP 连接 vs 首请求构建的**竞速**（采集时机） |
 | **多出 agent-types 注入块** | 服务端 GrowthBook flag `tengu_agent_list_attach` **×** 客户端代码路径（≥2.1.84），两者同时满足时出现。同一版本构建时 6/11 没有、6/16 有 |
 | **deferred 工具列表随采集条件漂移**（`RemoteTrigger`↔`LSP` 互换、多出 `DesignSync`…） | 枚举出哪些 deferred 工具 =（当时开着的服务端 flag）×（客户端版本） |
-| **`# userEmail`** | 相同条件下 2.1.183：6/19 抓有、6/22 抓没有 |
 
 > **agent-types 注入块**
 >
