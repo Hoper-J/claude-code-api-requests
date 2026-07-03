@@ -1,12 +1,16 @@
+<div align="center">
+
 # claude-code-api-requests
 
 **English** | [中文](README.zh-CN.md)
 
-[![gates](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml/badge.svg)](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml)
+[![gates](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml/badge.svg)](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml) [![license](https://img.shields.io/github/license/Hoper-J/claude-code-api-requests)](LICENSE)
 
 **Live site: [api-requests.cc](https://api-requests.cc)**
 
-![Lineage — timeline view](assets/lineage-timeline.png)
+![Timeline view](assets/lineage-timeline.png)
+
+</div>
 
 I'd always been curious how an industry-bellwether product like Claude Code handles and organizes context. After some digging, this project is what came out of it — here you can see how Claude Code's default request evolved across the 2.x line. The changes are genuinely interesting, for example:
 

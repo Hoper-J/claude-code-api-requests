@@ -1,12 +1,16 @@
+<div align="center">
+
 # claude-code-api-requests
 
 [English](README.md) | **中文**
 
-[![gates](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml/badge.svg)](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml)
+[![gates](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml/badge.svg)](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml) [![license](https://img.shields.io/github/license/Hoper-J/claude-code-api-requests)](LICENSE)
 
 **在线访问：[api-requests.cc](https://api-requests.cc)**
 
-![Lineage — timeline view](assets/lineage-timeline.png)
+![时间线视图](assets/lineage-timeline.png)
+
+</div>
 
 一直都很好奇 Claude Code 这样的一个行业标杆级产品是怎么处理和组织上下文的，进行了一番探索后有了当前项目的分享，你可以在这里看到 2.* 版本后 Claude Code 默认请求的变化。它们确实很有趣，比如：
 

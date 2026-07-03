@@ -145,16 +145,16 @@ const ofl = read(path.join(PUB, "assets", "fonts", "LICENSE-OFL.md"));
 
 const themeScript = `<script>try{var t=localStorage.getItem("lineage-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>`;
 const splash = `<div id="root"><div role="status" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--bg-app);color:var(--text-faint)">
-  <div style="font-family:var(--font-editorial,serif);font-size:28px;color:var(--text-strong);animation:linpulse 1.2s ease-in-out infinite">Lineage</div>
+  <svg width="36" height="36" viewBox="0 0 32 32" fill="none" style="color:var(--text-strong);animation:linpulse 1.2s ease-in-out infinite"><line x1="9" y1="4.5" x2="9" y2="27.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M9 16 C 9 21, 14 20, 23 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="9" cy="6.5" r="3.4" fill="var(--bg-app)" stroke="currentColor" stroke-width="2.2"/><circle cx="9" cy="25.5" r="3.4" fill="var(--bg-app)" stroke="currentColor" stroke-width="2.2"/><circle cx="24.5" cy="20" r="3.4" fill="var(--brand,#c2410c)"/></svg>
   <div style="font-family:var(--font-ui,sans-serif);font-size:13px">loading the corpus · 正在载入语料 (${TOTAL} versions)</div>
   <style>@keyframes linpulse{0%,100%{opacity:1}50%{opacity:.45}}</style>
 </div></div>
-<noscript><div style="font-family:sans-serif;padding:40px;text-align:center">Lineage offline archive — this file requires JavaScript. 本离线存档需要启用 JavaScript。</div></noscript>`;
+<noscript><div style="font-family:sans-serif;padding:40px;text-align:center">Claude Code API Requests — offline archive. This file requires JavaScript. 本离线存档需要启用 JavaScript。</div></noscript>`;
 
 const colophon = `<details style="max-width:1200px;margin:0 auto;padding:10px 24px 40px;font-family:sans-serif;font-size:12px;color:#888">
   <summary style="cursor:pointer">Licenses &amp; colophon · 许可与出处</summary>
   <div style="line-height:1.6;margin-top:10px">
-    <p><strong>Lineage — offline archive.</strong> Built ${BUILT} from a corpus of ${TOTAL} captured Claude Code versions.
+    <p><strong>Claude Code API Requests — offline archive.</strong> Built ${BUILT} from a corpus of ${TOTAL} captured Claude Code versions.
     Online version: <a href="https://api-requests.cc">api-requests.cc</a> ·
     Repository: <a href="https://github.com/Hoper-J/claude-code-api-requests">github.com/Hoper-J/claude-code-api-requests</a> (MIT — covers the code and site, <em>not</em> the corpus content).</p>
     <p>The corpus quotes, verbatim and for educational/research purposes, API requests produced by the Claude Code CLI; system prompts, tool
@@ -193,7 +193,7 @@ for (const f of ["kit-lib.jsx", "locales.jsx", "App.jsx"]) {
 }
 // colophon before </body>; provenance comment at byte 0
 inject(/<\/body>/, colophon + "\n</body>", "</body>");
-html = `<!-- Lineage offline archive · built ${BUILT} · ${TOTAL} versions · https://api-requests.cc · https://github.com/Hoper-J/claude-code-api-requests -->\n` + html;
+html = `<!-- Claude Code API Requests · offline archive · built ${BUILT} · ${TOTAL} versions · https://api-requests.cc · https://github.com/Hoper-J/claude-code-api-requests -->\n` + html;
 
 /* ---- 9. artifact gates ---- */
 const scripts = scriptCloseGate(html);

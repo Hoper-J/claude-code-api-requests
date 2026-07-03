@@ -12,7 +12,7 @@ const LOCALES = {
     timeline: "Timeline",
     overview: "Overview",
     versionsCaptured: (ok, total) => `${ok} of ${total} versions captured`,
-    footerTagline: (n) => `Static teaching archive · ${n} versions · served from CDN`,
+    footerTagline: (n) => `Static teaching archive · ${n} versions`,
     footerTaglineOffline: (n, built) => `Offline archive · built ${built} · ${n} versions`,
     whatChanged: "What changed",
     gapNote: (n, from, to) => `${n} auxiliary version${n===1?"":"s"} hidden (${from}–${to})`,
@@ -22,6 +22,7 @@ const LOCALES = {
     search: "Search",
     searchPlaceholder: "Search system prompts and tools…",
     skipToContent: "Skip to content",
+    homeAria: "Home",
     captureBanner: "Every request here is captured via `claude -p` — non-interactive print mode. An interactive session can send a different request.",
     systemPrompt: "System prompt",
     tools: "Tools",
@@ -106,7 +107,7 @@ const LOCALES = {
     anatomy: {
       nav: "Anatomy",
       title: "Anatomy of the request",
-      lead: "Every version sends a single POST to the Messages API. Here is how that request body is assembled — and where each part surfaces in Lineage.",
+      lead: "Every version sends a single POST to the Messages API. Here is how that request body is assembled — and where each part surfaces on this site.",
       skeletonNote: "The shape of the JSON body (illustrative):",
       parts: [
         { name:"system[]", what:"The system prompt — top-level instructions that define the agent: role, tone, tool policy, safety rules. An array of independently cacheable text blocks, sent separately from the conversation.", where:"System prompt tab" },
@@ -148,7 +149,7 @@ const LOCALES = {
     timeline: "时间线",
     overview: "概览",
     versionsCaptured: (ok, total) => `已捕获 ${total} 个版本中的 ${ok} 个`,
-    footerTagline: (n) => `静态教学存档 · ${n} 个版本 · CDN 直出`,
+    footerTagline: (n) => `静态教学存档 · ${n} 个版本`,
     footerTaglineOffline: (n, built) => `离线存档 · 构建于 ${built} · ${n} 个版本`,
     whatChanged: "变更内容",
     gapNote: (n, from, to) => `隐藏 ${n} 个辅助版本 (${from}–${to})`,
@@ -158,6 +159,7 @@ const LOCALES = {
     search: "搜索",
     searchPlaceholder: "搜索系统提示与工具…",
     skipToContent: "跳到正文",
+    homeAria: "首页",
     captureBanner: "本站每条请求均经 `claude -p` 采集 —— 非交互打印模式。交互式会话发出的请求可能不同。",
     systemPrompt: "系统提示",
     tools: "工具",
@@ -243,7 +245,7 @@ const LOCALES = {
     anatomy: {
       nav: "结构",
       title: "请求结构解析",
-      lead: "每个版本都向 Messages API 发送一个 POST 请求。这里拆解请求体是怎么拼起来的 —— 以及每一部分在 Lineage 的哪里展示。",
+      lead: "每个版本都向 Messages API 发送一个 POST 请求。这里拆解请求体是怎么拼起来的 —— 以及每一部分在本站的哪里展示。",
       skeletonNote: "JSON 请求体的形状（示意）：",
       parts: [
         { name:"system[]", what:"系统提示 —— 定义 agent 的顶层指令：角色、语气、工具策略、安全规则。是一个可独立缓存的文本块数组，与对话分开发送。", where:"System prompt 标签" },

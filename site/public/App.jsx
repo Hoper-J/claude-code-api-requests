@@ -10,19 +10,16 @@ const L10N = window.LINEAGE_LOCALES;
 const CHANGELOG = window.LINEAGE_CHANGELOG || { entries: {} };
 const CL_ZH = (window.LINEAGE_CHANGELOG_ZH && window.LINEAGE_CHANGELOG_ZH.entries) || {};
 
-/* ---------- Wordmark ---------- */
-function Wordmark({ size = 28 }) {
+/* ---------- Brand mark (icon only — the site carries no wordmark) ---------- */
+function Mark({ size = 28 }) {
   return (
-    <span style={{ display:"inline-flex", alignItems:"center", gap:10, color:"var(--text-strong)" }}>
-      <svg width={size} height={size} viewBox="0 0 32 32" fill="none" style={{ display:"block" }}>
-        <line x1="9" y1="4.5" x2="9" y2="27.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-        <path d="M9 16 C 9 21, 14 20, 23 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
-        <circle cx="9" cy="6.5" r="3.4" fill="var(--bg-app)" stroke="currentColor" strokeWidth="2.2"/>
-        <circle cx="9" cy="25.5" r="3.4" fill="var(--bg-app)" stroke="currentColor" strokeWidth="2.2"/>
-        <circle cx="24.5" cy="20" r="3.4" fill="var(--brand)"/>
-      </svg>
-      <span style={{ fontFamily:"var(--font-editorial)", fontSize:size*0.82, fontWeight:600, letterSpacing:"-0.01em" }}>Lineage</span>
-    </span>
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" style={{ display:"block", color:"var(--text-strong)" }}>
+      <line x1="9" y1="4.5" x2="9" y2="27.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
+      <path d="M9 16 C 9 21, 14 20, 23 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
+      <circle cx="9" cy="6.5" r="3.4" fill="var(--bg-app)" stroke="currentColor" strokeWidth="2.2"/>
+      <circle cx="9" cy="25.5" r="3.4" fill="var(--bg-app)" stroke="currentColor" strokeWidth="2.2"/>
+      <circle cx="24.5" cy="20" r="3.4" fill="var(--brand)"/>
+    </svg>
   );
 }
 
@@ -35,7 +32,8 @@ function SkipLink({ t }) {
   return (
     <a href="#main" onClick={jump} onFocus={()=>setVis(true)} onBlur={()=>setVis(false)}
       style={{ position:"fixed", top:12, left:12, zIndex:60, padding:"9px 14px", borderRadius:"var(--radius-2)",
-        background:"var(--surface-card)", border:"1px solid var(--line-strong)", boxShadow:"var(--shadow-pop)",
+        background:"var(--surface-card)", border:"1px solid var(--line-strong)",
+        boxShadow: vis ? "var(--shadow-pop)" : "none",
         fontFamily:"var(--font-ui)", fontSize:"var(--t-sm)", color:"var(--text-strong)",
         transform: vis ? "none" : "translateY(-200%)" }}>
       {t.skipToContent}
@@ -49,8 +47,9 @@ function Header({ t, route, go, locale, setLocale, theme, setTheme, onSearch }) 
     <header style={{ position:"sticky", top:0, zIndex:20, background:"color-mix(in oklch, var(--bg-app) 86%, transparent)",
       backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", borderBottom:"1px solid var(--line-hairline)" }}>
       <div style={{ maxWidth:"var(--container)", margin:"0 auto", padding:"0 24px", height:60, display:"flex", alignItems:"center", gap:"clamp(8px, 1.6vw, 20px)" }}>
-        <button onClick={()=>go({ view:"timeline" })} style={{ border:"none", background:"none", cursor:"pointer", padding:0 }}>
-          <Wordmark />
+        <button onClick={()=>go({ view:"timeline" })} aria-label={t.homeAria} title={t.homeAria}
+          style={{ border:"none", background:"none", cursor:"pointer", padding:0 }}>
+          <Mark />
         </button>
         <nav style={{ display:"flex", gap:4, marginLeft:8 }}>
           <NavLink active={route.view==="timeline"} onClick={()=>go({ view:"timeline" })}>{t.timeline}</NavLink>
@@ -1526,10 +1525,19 @@ function Footer({ t }) {
   return (
     <footer style={{ borderTop:"1px solid var(--line-hairline)", marginTop:20 }}>
       <div style={{ maxWidth:"var(--container)", margin:"0 auto", padding:"26px 24px", display:"flex", alignItems:"center", gap:14, flexWrap:"wrap" }}>
-        <Wordmark size={20} />
+        <span aria-hidden="true"><Mark size={20} /></span>
         <span style={{ fontFamily:"var(--font-ui)", fontSize:"var(--t-caption)", color:"var(--text-faint)" }}>{window.LINEAGE_OFFLINE ? t.footerTaglineOffline(DATA.COUNTS.total, window.LINEAGE_OFFLINE.built) : t.footerTagline(DATA.COUNTS.total)}</span>
         <span style={{ flex:1 }} />
         <span style={{ display:"inline-flex", alignItems:"center", gap:12, fontFamily:"var(--font-mono)", fontSize:"var(--t-micro)", color:"var(--text-faint)" }}>
+          {window.LINEAGE_OFFLINE && <>
+            <a href="https://api-requests.cc" target="_blank" rel="noopener noreferrer"
+              style={{ color:"var(--text-faint)", textDecoration:"none" }}
+              onMouseEnter={(e)=>{ e.currentTarget.style.color="var(--text-strong)"; }}
+              onMouseLeave={(e)=>{ e.currentTarget.style.color="var(--text-faint)"; }}>
+              api-requests.cc
+            </a>
+            <span style={{ color:"var(--line-strong)" }}>|</span>
+          </>}
           <span>npm: @anthropic-ai/claude-code</span>
           <span style={{ color:"var(--line-strong)" }}>|</span>
           <a href="https://github.com/Hoper-J/claude-code-api-requests" target="_blank" rel="noopener noreferrer"

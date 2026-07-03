@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This repo is a cross-version archive site for the Claude Code CLI's default API request (brand: Lineage, domain: api-requests.cc). The corpus lives in `corpus/`, the site in `site/`, and capture in `capture/`; for everyday commands see the "CLI overview" in [README.md](README.md). The corpus is produced by the maintainer's isolated capture setup — outsiders neither need nor can reproduce it, and the display side has zero `ccwrap` dependency.
+This repo is a cross-version archive site for the Claude Code CLI's default API request (domain: api-requests.cc; "Lineage" is the internal codename behind code namespaces like `LINEAGE_*` — not a user-facing brand). The corpus lives in `corpus/`, the site in `site/`, and capture in `capture/`; for everyday commands see the "CLI overview" in [README.md](README.md). The corpus is produced by the maintainer's isolated capture setup — outsiders neither need nor can reproduce it, and the display side has zero `ccwrap` dependency.
 
 ## Invariants you must hold when changing code
 
