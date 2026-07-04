@@ -3346,6 +3346,24 @@
     "Transient server rate-limit errors (429s unrelated to your usage limit) are now retried automatically with backoff for subscribers instead of failing the turn": "对订阅用户，瞬时的服务器限流错误（与你的用量上限无关的 429）现在会退避自动重试，而非让该回合直接失败",
     "`CLAUDE_CODE_RETRY_WATCHDOG` now raises the default retry count for non-capacity transient errors to 300 and lifts the cap of 15 on `CLAUDE_CODE_MAX_RETRIES`": "`CLAUDE_CODE_RETRY_WATCHDOG` 现在把非容量类瞬时错误的默认重试次数提高到 300，并解除 `CLAUDE_CODE_MAX_RETRIES` 上限 15 的限制",
     "`claude agents` session rows now show pull-request links as bare `#N` without the redundant \"PR\" label": "`claude agents` 会话行现在把 pull request 链接显示为纯 `#N`，不再带多余的 \"PR\" 标签",
-    "Subagents now run in the background by default, so Claude keeps working while they run and is notified when they finish (previously a gradual rollout)": "子代理现在默认在后台运行，Claude 在它们运行期间可以继续工作，完成时会收到通知（此前为逐步灰度发布）"
+    "Subagents now run in the background by default, so Claude keeps working while they run and is notified when they finish (previously a gradual rollout)": "子代理现在默认在后台运行，Claude 在它们运行期间可以继续工作，完成时会收到通知（此前为逐步灰度发布）",
+    "Claude Sonnet 5 sessions no longer use the mid-conversation system role for harness reminders": "Claude Sonnet 5 会话不再用对话中途的 system role 传递 harness 提醒",
+    "Changed `AskUserQuestion` dialogs to no longer auto-continue by default; opt into an idle timeout via `/config`": "`AskUserQuestion` 对话框改为默认不再自动继续；可通过 `/config` 选择启用空闲超时",
+    "Changed the \"default\" permission mode to \"Manual\" across the CLI, `--help`, VS Code, and JetBrains; `--permission-mode manual` and `\"defaultMode\": \"manual\"` are accepted alongside `default`": "把 \"default\" 权限模式在 CLI、`--help`、VS Code 和 JetBrains 中统一改名为 \"Manual\"；`--permission-mode manual` 和 `\"defaultMode\": \"manual\"` 与 `default` 并行可用",
+    "Fixed a crash at startup when `disabledMcpServers` or `enabledMcpServers` in `.claude.json` is set to a non-array value": "修复 `.claude.json` 中 `disabledMcpServers` 或 `enabledMcpServers` 被设为非数组值时启动崩溃的问题",
+    "Fixed background sessions silently stopping mid-turn after sleep/wake or when reopening a stalled session": "修复睡眠唤醒后或重新打开停滞会话时后台会话在回合中途静默停止的问题",
+    "Fixed background sessions re-running a turn cancelled with Esc after a stall respawn": "修复停滞重生后后台会话重新执行已被 Esc 取消的回合的问题",
+    "Fixed background agents never starting again after a crash left a stale `daemon.lock` whose PID the OS reused": "修复崩溃遗留的过期 `daemon.lock` 的 PID 被系统复用后，后台代理再也无法启动的问题",
+    "Fixed background-agent daemon handover so a reinstalled older build can no longer take over the daemon; build recency is now judged by the version's embedded build timestamp": "修复后台代理守护进程的接管逻辑，重装的旧构建不能再接管守护进程；构建新旧现在按版本内嵌的构建时间戳判定",
+    "Fixed background-agent roster issues: transient corruption permanently disabling orphan cleanup, older binaries not preserving fields written by newer versions, and socket auth tokens being stripped during daemon restarts": "修复后台代理花名册的问题：瞬时损坏永久禁用孤儿清理、旧二进制不保留新版本写入的字段、守护进程重启时 socket 鉴权令牌被剥除",
+    "Fixed subagents cut off by a rate limit before producing any text output returning an empty result instead of failing cleanly": "修复子代理在产生任何文本输出前被限流截断时返回空结果、而非干净失败的问题",
+    "Fixed control bytes from background-agent output reaching the terminal in the agent view": "修复后台代理输出中的控制字节漏进代理视图终端的问题",
+    "Fixed `claude agents --plugin-dir <dir>` not showing the plugin's agents and skills in the agent view when the flag is placed after `agents`": "修复 `claude agents --plugin-dir <dir>` 的标志放在 `agents` 之后时，代理视图不显示该插件的代理与 skill 的问题",
+    "Fixed project-scoped plugins not loading correctly from git worktrees of the same repository": "修复项目级插件在同一仓库的 git worktree 中不能正确加载的问题",
+    "Fixed `/mcp` server list not tracking focus for screen readers and magnifiers": "修复 `/mcp` 服务器列表不跟踪焦点、影响屏幕阅读器与放大镜的问题",
+    "Fixed voice dictation showing a misleading \"Voice connection failed\" message when a recording captures no audio": "修复录音未捕获到音频时语音听写误报 \"Voice connection failed\" 的问题",
+    "Fixed rendering flicker under tmux 3.4+ by enabling synchronized terminal output": "通过启用同步终端输出，修复 tmux 3.4+ 下渲染闪烁的问题",
+    "Improved screen-reader output: decorative glyphs are now hidden, transcript symbols read as short labels, and nested tables read as `Header: value.` lines": "改进屏幕阅读器输出：装饰性字形现已隐藏、转录符号读作简短标签、嵌套表格按 `Header: value.` 行朗读",
+    "Improved the install script to explain when installation is killed by the system running out of memory": "改进安装脚本，在安装因系统内存耗尽被杀时给出说明"
   }
 }
