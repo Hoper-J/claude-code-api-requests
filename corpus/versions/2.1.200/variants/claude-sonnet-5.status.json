@@ -3,7 +3,7 @@
  "base_version": "2.1.200",
  "pinned_model": "claude-sonnet-5",
  "is_default": false,
- "captured_at": "2026-07-03",
+ "captured_at": "2026-07-06",
  "model_in_request": "claude-sonnet-5",
  "http_status": 200,
  "ja3": "<ja3#6>",

@@ -32,7 +32,7 @@
     "keep-alive"
    ],
    "Content-Length": [
-    "59748"
+    "59738"
    ],
    "Content-Type": [
     "application/json"
@@ -121,7 +121,7 @@
    "stream": true,
    "system": [
     {
-     "text": "x-anthropic-billing-header: cc_version=2.1.196.a1b; cc_entrypoint=sdk-cli; cch=e5bbf;",
+     "text": "x-anthropic-billing-header: cc_version=2.1.196.a1b; cc_entrypoint=sdk-cli; cch=57e22;",
      "type": "text"
     },
     {
@@ -529,11 +529,11 @@
  },
  "response": {
   "status": 200,
-  "body": "event: message_start\ndata: {\"message\":{\"content\":[],\"diagnostics\":null,\"id\":\"msg_013qdgVxj96hDHkYiYe3XT5U\",\"model\":\"claude-fable-5\",\"role\":\"assistant\",\"stop_details\":null,\"stop_reason\":null,\"stop_sequence\":null,\"type\":\"message\",\"usage\":{\"input_tokens\":2672,\"cache_creation_input_tokens\":3524,\"cache_read_input_tokens\":14837,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":3524},\"output_tokens\":4,\"service_tier\":\"standard\",\"inference_geo\":\"not_available\"}},\"type\":\"message_start\"}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"} }\n\nevent: ping\ndata: {\"type\": \"ping\"}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"ping\"}     }\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0           }\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"stop_details\":null},\"usage\":{\"input_tokens\":2672,\"cache_creation_input_tokens\":3524,\"cache_read_input_tokens\":14837,\"output_tokens\":4,\"output_tokens_details\":{\"thinking_tokens\":0},\"iterations\":[{\"input_tokens\":2672,\"output_tokens\":4,\"cache_read_input_tokens\":14837,\"cache_creation_input_tokens\":3524,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":3524},\"type\":\"message\"}]},\"context_management\":{\"applied_edits\":[]}            }\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"        }\n\n",
+  "body": "event: message_start\ndata: {\"message\":{\"content\":[],\"diagnostics\":null,\"id\":\"msg_01HZxAkBk9uU21nrbv23FGTB\",\"model\":\"claude-fable-5\",\"role\":\"assistant\",\"stop_details\":null,\"stop_reason\":null,\"stop_sequence\":null,\"type\":\"message\",\"usage\":{\"input_tokens\":2550,\"cache_creation_input_tokens\":3524,\"cache_read_input_tokens\":14837,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":3524},\"output_tokens\":3,\"service_tier\":\"standard\",\"inference_geo\":\"not_available\"}},\"type\":\"message_start\"}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"thinking\",\"thinking\":\"\",\"signature\":\"\"}}\n\nevent: ping\ndata: {\"type\": \"ping\"}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"signature_delta\",\"signature\":\"CAISygIKYggPGAIqQMGzMWPBn6+xtikxrIPohROfembjXKhH1I6h2QVTZOPOpEHSXxI1ei5A3IHgI8jLX1bfPTotxMb9lw9/TWkA0JUyDmNsYXVkZS1mYWJsZS01OAFCCHRoaW5raW5nEgxvreQbKl4GBJZXezIaDCMU2B/po/srP5yoAiIwLkwp+99khVOIk/fyTwQLh6WQy4qqmoyIG9orBo8NBeat4xv4+Z8GInITrOcM7ga5KpUB+41wINk7Kff61cBkz96N0VdZGMUDnSuogoVAQ5feuDfQZdLyrV6qz/aszEDI1aPLkp+INAllEMJitERlKNcYLIY5y61KV5pGBRWn6U3kPGz6MNU925lgC49iLuq50/C1MtemuNgKlpUnPyegx9F/irl7jrzqgRh8dc/gwx8tV2CrtylB5Mon0cKem9EUPBPCwJY9YqkYAQ==\"}      }\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0 }\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":1,\"content_block\":{\"type\":\"text\",\"text\":\"\"}         }\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"text_delta\",\"text\":\"ping\"}        }\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":1   }\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"stop_details\":null},\"usage\":{\"input_tokens\":2550,\"cache_creation_input_tokens\":3524,\"cache_read_input_tokens\":14837,\"output_tokens\":47,\"output_tokens_details\":{\"thinking_tokens\":43},\"iterations\":[{\"input_tokens\":2550,\"output_tokens\":47,\"cache_read_input_tokens\":14837,\"cache_creation_input_tokens\":3524,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":3524},\"type\":\"message\"}]},\"context_management\":{\"applied_edits\":[]}     }\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"           }\n\n",
   "body_encoding": "sse"
  },
  "meta": {
-  "claude_bin": "~/claude-code-api-requests/corpus/versions/2.1.196/claude-wrapper.sh",
+  "claude_bin": "~/capture-recheck-2026-07-06/versions/2.1.196/claude-wrapper.sh",
   "schema_version": 1,
   "unmasked": false,
   "notes": [

@@ -1,0 +1,32 @@
+{
+ "variant_id": "claude-sonnet-4-5",
+ "base_version": "2.1.143",
+ "pinned_model": "claude-sonnet-4-5",
+ "is_default": false,
+ "captured_at": "2026-07-06",
+ "model_in_request": "claude-sonnet-4-5",
+ "http_status": 200,
+ "ja3": "<ja3#6>",
+ "ja4": "<ja4#6>",
+ "system_blocks": 4,
+ "tools_count": 11,
+ "is_quota_probe": false,
+ "is_main_inference": true,
+ "model_axis_diff": {
+  "vs": "claude-opus-4-7 (default)",
+  "model": {
+   "from": "claude-opus-4-7",
+   "to": "claude-sonnet-4-5"
+  },
+  "fallbacks_added": false,
+  "beta_added": [],
+  "beta_removed": [
+   "context-1m-2025-08-07",
+   "effort-2025-11-24"
+  ],
+  "body_keys_added": [],
+  "body_keys_removed": [
+   "output_config"
+  ]
+ }
+}

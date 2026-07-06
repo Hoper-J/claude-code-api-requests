@@ -3,7 +3,7 @@
  "base_version": "2.1.190",
  "pinned_model": "claude-fable-5[1m]",
  "is_default": false,
- "captured_at": "2026-07-02",
+ "captured_at": "2026-07-06",
  "model_in_request": "claude-fable-5",
  "http_status": 200,
  "ja3": "<ja3#6>",

@@ -58,7 +58,7 @@ The data files in `corpus/` are **masked in place** by `sanitize/sanitize.js`, p
 ## Notes
 
 - `corpus/` is an **archive** of the API requests the Claude Code CLI actually sends — the system prompts, tool definitions, and so on are authored by Anthropic and remain their property; they are shown here for **educational and research** use only.
-- Because fable-5 can no longer issue requests or receive responses normally, the planned "re-capture every version's request" is on hold for now — otherwise it would distort the same-version opus-4.8 vs fable-5 comparison.
+- The corpus baseline (2.0.0–2.1.201, every version and pinned-model variant) was captured in one pass on a single day in one environment; newer versions are added as they ship. Within the baseline, cross-version differences read as version signal rather than capture-date drift.
 - `corpus/changelog/` is a snapshot of the official `anthropics/claude-code` CHANGELOG.md; the accompanying translations are build-time helper content, with the English original taking precedence.
 - This repo's MIT license covers only this repo's code, build pipeline, site implementation, and documentation arrangement — it makes no claim over the corpus content.
 - If a rights holder objects to any content, open an issue and it will be removed.

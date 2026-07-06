@@ -32,7 +32,7 @@
     "keep-alive"
    ],
    "Content-Length": [
-    "94759"
+    "94321"
    ],
    "Content-Type": [
     "application/json"
@@ -91,7 +91,7 @@
        "type": "text"
       },
       {
-       "text": "<system-reminder>\nThe following deferred tools are now available via ToolSearch. Their schemas are NOT loaded — calling them directly will fail with InputValidationError. Use ToolSearch with query \"select:<name>[,<name>...]\" to load tool schemas before calling them:\nCronCreate\nCronDelete\nCronList\nDesignSync\nEnterWorktree\nExitWorktree\nMonitor\nNotebookEdit\nPushNotification\nRemoteTrigger\nSendMessage\nTaskCreate\nTaskGet\nTaskList\nTaskOutput\nTaskStop\nTaskUpdate\nWebFetch\nWebSearch\n\nThe following MCP servers are still connecting — their tools (typically named mcp__<server>__*) are not yet available but will appear shortly:\nexample\n\nIf the user's request might be served by one of these servers (even if they didn't name it explicitly), call ToolSearch with a relevant keyword — ToolSearch will wait for connecting servers and search their tools once available. Do not report a capability as unavailable without first searching.\n</system-reminder>",
+       "text": "<system-reminder>\nThe following deferred tools are now available via ToolSearch. Their schemas are NOT loaded — calling them directly will fail with InputValidationError. Use ToolSearch with query \"select:<name>[,<name>...]\" to load tool schemas before calling them:\nCronCreate\nCronDelete\nCronList\nDesignSync\nEnterWorktree\nExitWorktree\nMonitor\nNotebookEdit\nPushNotification\nRemoteTrigger\nSendMessage\nTaskCreate\nTaskGet\nTaskList\nTaskOutput\nTaskStop\nTaskUpdate\nWebFetch\nWebSearch\nmcp__example__echo\n</system-reminder>",
        "type": "text"
       },
       {
@@ -128,7 +128,7 @@
    "stream": true,
    "system": [
     {
-     "text": "x-anthropic-billing-header: cc_version=2.1.201.72b; cc_entrypoint=sdk-cli; cch=0ae18;",
+     "text": "x-anthropic-billing-header: cc_version=2.1.201.72b; cc_entrypoint=sdk-cli; cch=94550;",
      "type": "text"
     },
     {
@@ -542,11 +542,11 @@
  },
  "response": {
   "status": 200,
-  "body": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"model\":\"claude-sonnet-5\",\"id\":\"msg_01AhpNHVUAfrhhRj9j2EEgfa\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"stop_details\":null,\"usage\":{\"input_tokens\":2,\"cache_creation_input_tokens\":9155,\"cache_read_input_tokens\":23201,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":9155},\"output_tokens\":4,\"service_tier\":\"standard\",\"inference_geo\":\"not_available\"},\"diagnostics\":null}   }\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}    }\n\nevent: ping\ndata: {\"type\": \"ping\"}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"ping\"}        }\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0         }\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"stop_details\":null},\"usage\":{\"input_tokens\":2,\"cache_creation_input_tokens\":9155,\"cache_read_input_tokens\":23201,\"output_tokens\":4,\"output_tokens_details\":{\"thinking_tokens\":0},\"iterations\":[{\"input_tokens\":2,\"output_tokens\":4,\"cache_read_input_tokens\":23201,\"cache_creation_input_tokens\":9155,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":9155},\"type\":\"message\"}]},\"context_management\":{\"applied_edits\":[]}               }\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"              }\n\n",
+  "body": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"model\":\"claude-sonnet-5\",\"id\":\"msg_01Kjvi5qsjpz8RUExUP9ybf2\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"stop_details\":null,\"usage\":{\"input_tokens\":2,\"cache_creation_input_tokens\":3646,\"cache_read_input_tokens\":28588,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":3646},\"output_tokens\":4,\"service_tier\":\"standard\",\"inference_geo\":\"not_available\"},\"diagnostics\":null}      }\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}   }\n\nevent: ping\ndata: {\"type\": \"ping\"}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"ping\"}    }\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0         }\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"stop_details\":null},\"usage\":{\"input_tokens\":2,\"cache_creation_input_tokens\":3646,\"cache_read_input_tokens\":28588,\"output_tokens\":4,\"output_tokens_details\":{\"thinking_tokens\":0},\"iterations\":[{\"input_tokens\":2,\"output_tokens\":4,\"cache_read_input_tokens\":28588,\"cache_creation_input_tokens\":3646,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":3646},\"type\":\"message\"}]},\"context_management\":{\"applied_edits\":[]}           }\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
   "body_encoding": "sse"
  },
  "meta": {
-  "claude_bin": "~/claude-code-api-requests/corpus/versions/2.1.201/claude-wrapper.sh",
+  "claude_bin": "~/capture-recheck-2026-07-06/versions/2.1.201/claude-wrapper.sh",
   "schema_version": 1,
   "unmasked": false,
   "notes": [

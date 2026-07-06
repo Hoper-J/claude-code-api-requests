@@ -3,9 +3,9 @@
  "result": "ok",
  "phase": "done",
  "regime": "js",
- "claude_bin": "~/claude-code-api-requests/corpus/versions/2.0.28/claude-wrapper.sh",
+ "claude_bin": "~/capture-recheck-2026-07-06/versions/2.0.28/claude-wrapper.sh",
  "install_ok": true,
- "install_seconds": 3,
+ "install_seconds": 1,
  "capture_exit": 0,
  "http_status": 200,
  "ja3": "<ja3#1>",
@@ -15,8 +15,11 @@
  "tools_count": 16,
  "is_quota_probe": false,
  "is_main_inference": true,
- "captured_at": "2026-06-10",
- "duration_seconds": 19,
+ "captured_at": "2026-07-06",
+ "duration_seconds": 12,
  "pruned": true,
- "error": ""
+ "error": "",
+ "variants": [
+  "claude-haiku-4-5"
+ ]
 }
