@@ -273,6 +273,11 @@ write_wrapper() {  # write_wrapper VDIR REGIME EXEC...  -> path to wrapper
     # ("Not logged in"). Unset it so the capture authenticates like a real
     # standalone run (<=2.1.197 ignored the flag, so this changes nothing there).
     echo 'unset CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST'
+    # A plain user's shell has none of the CLAUDE* session vars either. They
+    # leak in when the capture is launched from inside a Claude Code session,
+    # and CLAUDECODE trips the nested-session guard (js-regime versions from
+    # ~2.1.40 refuse to start: "cannot be launched inside another session").
+    echo 'unset CLAUDECODE CLAUDE_CODE_ENTRYPOINT CLAUDE_CODE_EXECPATH CLAUDE_CODE_SESSION_ID CLAUDE_CODE_CHILD_SESSION CLAUDE_EFFORT CLAUDE_PLUGIN_DATA'
     if [ "$regime" = native ]; then printf 'exec %q "$@"\n' "$1"
     else printf 'exec %q %q "$@"\n' "$1" "$2"; fi
   } > "$wf"
