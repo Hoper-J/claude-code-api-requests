@@ -3364,6 +3364,24 @@
     "Fixed voice dictation showing a misleading \"Voice connection failed\" message when a recording captures no audio": "修复录音未捕获到音频时语音听写误报 \"Voice connection failed\" 的问题",
     "Fixed rendering flicker under tmux 3.4+ by enabling synchronized terminal output": "通过启用同步终端输出，修复 tmux 3.4+ 下渲染闪烁的问题",
     "Improved screen-reader output: decorative glyphs are now hidden, transcript symbols read as short labels, and nested tables read as `Header: value.` lines": "改进屏幕阅读器输出：装饰性字形现已隐藏、转录符号读作简短标签、嵌套表格按 `Header: value.` 行朗读",
-    "Improved the install script to explain when installation is killed by the system running out of memory": "改进安装脚本，在安装因系统内存耗尽被杀时给出说明"
+    "Improved the install script to explain when installation is killed by the system running out of memory": "改进安装脚本，在安装因系统内存耗尽被杀时给出说明",
+    "Added a \"Dynamic workflow size\" setting in `/config` for controlling how large Claude generally makes dynamic workflows (small/medium/large agent counts) — an advisory guideline, not an enforced cap": "在 `/config` 新增 \"Dynamic workflow size\" 设置，控制 Claude 生成动态工作流的一般规模（小/中/大代理数量）——是建议性准则，非强制上限",
+    "Added `workflow.run_id` and `workflow.name` OpenTelemetry attributes to telemetry emitted by workflow-spawned agents, so a workflow run's activity can be reconstructed from OTel data": "为工作流派生的代理发出的遥测新增 `workflow.run_id` 与 `workflow.name` OpenTelemetry 属性，可从 OTel 数据重建一次工作流运行的活动",
+    "Fixed a crash in the inline Ctrl+R history search when accepting or cancelling while the search was still scanning the history file": "修复内联 Ctrl+R 历史搜索仍在扫描历史文件时确认或取消会崩溃的问题",
+    "Fixed `/rename` on background sessions being reverted when the job restarts, which broke addressing the session by its new name": "修复后台会话的 `/rename` 在任务重启时被回退、导致无法按新名称寻址会话的问题",
+    "Fixed transient mTLS handshake failures when settings were re-applied during an in-place client certificate rotation": "修复客户端证书就地轮换期间重新应用设置时 mTLS 握手瞬时失败的问题",
+    "Fixed commands sent from Remote Control (mobile/web) into an interactive session failing with \"Unknown command\"": "修复从 Remote Control（移动端/网页）向交互式会话发送命令时报 \"Unknown command\" 的问题",
+    "Fixed images and files sent from the Remote Control mobile or web app without a caption being silently dropped": "修复从 Remote Control 移动端或网页应用发送不带说明文字的图片和文件被静默丢弃的问题",
+    "Fixed the sign-in URL printed by `claude auth login` and `claude mcp login --no-browser` not being reliably clickable when it wraps over SSH — it is now emitted as a single hyperlink": "修复 `claude auth login` 和 `claude mcp login --no-browser` 打印的登录 URL 经 SSH 换行后不能可靠点击的问题——现在会作为单个超链接输出",
+    "Fixed opening a chat from `claude agents` sometimes failing with \"currently running as a background agent\" followed by a worker crash/respawn loop": "修复从 `claude agents` 打开聊天偶尔报 \"currently running as a background agent\" 并伴随 worker 崩溃/重生循环的问题",
+    "Fixed workflow scripts with unicode quote escapes in strings being corrupted before parsing; workflow parse errors now show the offending line instead of always blaming TypeScript": "修复字符串中含 unicode 引号转义的工作流脚本在解析前被破坏的问题；工作流解析错误现在会显示出错的行，而不是一律归咎于 TypeScript",
+    "Fixed voice dictation retrying in an unbounded loop when the microphone or audio recorder fails — repeated capture failures now pause voice input": "修复麦克风或录音器故障时语音听写无限重试的问题——连续采集失败现在会暂停语音输入",
+    "Fixed `/remote-control` sessions showing the wrong permission mode in the mobile and web apps": "修复 `/remote-control` 会话在移动端和网页应用中显示错误权限模式的问题",
+    "Fixed resuming a session by name, or opening the resume picker, taking minutes and using a large amount of memory in repositories with many git worktrees": "修复在含大量 git worktree 的仓库中按名称恢复会话或打开恢复选择器耗时数分钟且占用大量内存的问题",
+    "Fixed installer and updater downloads failing immediately with \"aborted\" when a proxy or network drops the connection mid-download — transient connection drops now retry": "修复代理或网络在下载中途断开时安装器与更新器直接报 \"aborted\" 失败的问题——瞬时断连现在会重试",
+    "Fixed re-invoking an already-loaded skill appending a duplicate copy of its instructions to context": "修复重复调用已加载的 skill 会把其指令重复追加进上下文的问题",
+    "Improved `/workflows` agent list layout: wider titles, a dedicated time column, shorter model names, and no per-row tool-call counts": "改进 `/workflows` 代理列表布局：更宽的标题、独立的时间列、更短的模型名，并去掉每行的工具调用计数",
+    "Improved MCP error messages: clearer error when a server config has `url` but no `type`, suggesting `\"type\": \"http\"` instead of the misleading \"command: expected string\"": "改进 MCP 错误信息：服务器配置有 `url` 但缺 `type` 时给出更清晰的报错，建议 `\"type\": \"http\"`，替代误导性的 \"command: expected string\"",
+    "Changed `/review <pr>` back to a fast single-pass review; use `/code-review <level> <pr#>` for the multi-agent review at a chosen effort level": "把 `/review <pr>` 改回快速单遍审查；多代理审查请用 `/code-review <level> <pr#>` 并选择投入档位"
   }
 }
