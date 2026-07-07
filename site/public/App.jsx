@@ -143,6 +143,26 @@ function getDetail(version){
 }
 function prevOf(version){ const k=semverKey(version); const ok=DATA.INDEX.filter(x=>x.result==="ok"); const sorted=[...ok].sort((a,b)=>semverKey(a.version)<semverKey(b.version)?-1:1); const i=sorted.findIndex(x=>semverKey(x.version)>=k); return i>0?sorted[i-1].version:null; }
 function neighbors(version){ const sorted=[...DATA.INDEX].sort((a,b)=>semverKey(a.version)<semverKey(b.version)?-1:1); const i=sorted.findIndex(x=>x.version===version); return { prev:i>0?sorted[i-1].version:null, next:i<sorted.length-1?sorted[i+1].version:null }; }
+/* Model-family axes: derived from LENSES so the build script's family table
+   stays the single source of truth. Viewing a family's pinned sample makes
+   every cross-version action (prev/next, what-changed, diff) walk that axis. */
+const AXIS_OF = (() => {
+  const m = {};
+  for (const [fam, chain] of Object.entries(DATA.LENSES || {}))
+    for (const r of chain) if (r.sample !== "canonical") m[r.sample] = fam;
+  return m;
+})();
+function axisContext(version, capture){
+  const fam = capture ? AXIS_OF[capture] : null;
+  if (!fam) return null;
+  const chain = DATA.LENSES[fam];
+  const i = chain.findIndex(r => r.version === version);
+  // Off-axis pin (e.g. a superseded generation kept at a handover version)
+  // falls back to the default behavior.
+  if (i < 0 || chain[i].sample !== capture) return null;
+  const tok = r => r.sample === "canonical" ? r.version : `${r.version}@${r.sample}`;
+  return { family: fam, row: chain[i], prev: chain[i+1] || null, next: chain[i-1] || null, tok };
+}
 function latestChangedPair(){
   // INDEX is newest-first; find the most recent ok version with a non-empty delta
   const hit = DATA.INDEX.find(x => x.result==="ok" && !x.aux && x.delta && Object.keys(x.delta).length>0);
@@ -154,11 +174,24 @@ function latestChangedPair(){
   return { from, to };
 }
 /* ---------- Timeline ---------- */
-function TimelineView({ t, go }) {
+function TimelineView({ t, go, lens }) {
+  const lensChain = lens ? ((DATA.LENSES || {})[lens] || []) : null;
+  const idxByV = React.useMemo(() => new Map(DATA.INDEX.map(r => [r.version, r])), []);
   const shown = DATA.INDEX.filter(r => r.result !== "fail" && !r.aux);
   // count hidden (fail/aux) versions between each shown row and the next-older shown row
   const idxPos = new Map(DATA.INDEX.map((r,i)=>[r.version,i]));
-  const rows = shown.map((row,i)=>{
+  const rows = lensChain
+    ? lensChain.map(lr => {
+        // The handover badge already states the model change — drop the
+        // redundant "model changed" meta chip from the row's delta display.
+        let dispDelta = lr.delta;
+        if (lr.handover && dispDelta && dispDelta.model_changed) { dispDelta = { ...dispDelta }; delete dispDelta.model_changed; }
+        return {
+        row: { ...(idxByV.get(lr.version) || { version: lr.version, result: "ok" }),
+          model: lr.model, tools_count: lr.tools_count, delta: dispDelta,
+          lensInfo: { lens, sample: lr.sample, sourceSwitch: !!lr.sourceSwitch, handover: lr.handover || null } },
+        gap: 0, gapFrom: null, gapTo: null }; })
+    : shown.map((row,i)=>{
     let gap = 0, gapFrom = null, gapTo = null;
     if(i < shown.length-1){
       const a = idxPos.get(row.version), b = idxPos.get(shown[i+1].version);
@@ -170,6 +203,17 @@ function TimelineView({ t, go }) {
     }
     return { row, gap, gapFrom, gapTo };
   });
+  const axisHidden = lensChain ? Math.max(0, DATA.COUNTS.ok - lensChain.length) : 0;
+  const axisOldest = lensChain && lensChain.length ? lensChain[lensChain.length-1].version : null;
+  // Lens switch: a single opacity dip on the list (no layout animation on 240 rows).
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const [vis, setVis] = React.useState(true);
+  React.useEffect(() => {
+    if (reduceMotion) return;
+    setVis(false);
+    const id = requestAnimationFrame(() => requestAnimationFrame(() => setVis(true)));
+    return () => cancelAnimationFrame(id);
+  }, [lens]);
   return (
     <div style={{ maxWidth:"var(--container)", margin:"0 auto", padding:"0 24px" }}>
       <section style={{ padding:"64px 0 40px", maxWidth:"var(--measure-prose)" }}>
@@ -183,17 +227,35 @@ function TimelineView({ t, go }) {
       </section>
 
       <section style={{ paddingBottom:80 }}>
-        <div style={{ display:"flex", alignItems:"baseline", gap:10, marginBottom:8, paddingBottom:12, borderBottom:"1px solid var(--line-hairline)" }}>
+        <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap", gap:10, marginBottom:8, paddingBottom:12, borderBottom:"1px solid var(--line-hairline)" }}>
           <Eyebrow>{t.timeline}</Eyebrow>
-          <span style={{ marginLeft:"auto", fontFamily:"var(--font-ui)", fontSize:"var(--t-caption)", color:"var(--text-faint)" }}>{t.whatChanged} →</span>
+          <SegmentedControl size="sm" value={lens || ""} onChange={v=>go({ view:"timeline", ...(v ? { lens:v } : {}) })}
+            options={[{ value:"", label:t.lens.default }, { value:"sonnet", label:"Sonnet" }, { value:"haiku", label:"Haiku" }, { value:"fable", label:"Fable" }]} />
+          {/* Axis meta only when the axis is PARTIAL — full coverage restates the hero count. */}
+          {lens && axisHidden > 0 && lensChain.length > 0 && (
+            <span aria-live="polite" title={t.lens.axisStart(axisOldest, axisHidden)}
+              style={{ fontFamily:"var(--font-mono)", fontSize:"var(--t-caption)", color:"var(--text-faint)" }}>
+              {t.lens.axisMetaFrom(lensChain.length, axisOldest)}
+            </span>
+          )}
         </div>
-        <ol style={{ listStyle:"none", margin:0, padding:0 }}>
+        <ol style={{ listStyle:"none", margin:0, padding:0, opacity: vis ? 1 : 0.55,
+          transition: reduceMotion ? "none" : "opacity var(--dur-2) var(--ease-standard)" }}>
           {rows.map(({row,gap,gapFrom,gapTo}, i) => (
             <React.Fragment key={row.version}>
-              <TimelineRow row={row} t={t} go={go} last={i===rows.length-1 && gap===0} />
+              <TimelineRow row={row} t={t} go={go} last={i===rows.length-1 && gap===0 && !(lens && axisHidden>0)} />
               {gap>0 && <TimelineGap count={gap} from={gapFrom} to={gapTo} t={t} />}
             </React.Fragment>
           ))}
+          {lens && axisHidden > 0 && axisOldest && (
+            <li style={{ position:"relative", padding:"7px 14px 7px 30px" }}>
+              <span style={{ position:"absolute", left:14, top:0, bottom:0, width:2, background:"repeating-linear-gradient(var(--line-strong) 0 3px, transparent 3px 7px)" }} />
+              <span style={{ display:"inline-flex", alignItems:"center", gap:8, fontFamily:"var(--font-ui)", fontSize:"var(--t-caption)", color:"var(--text-faint)" }}>
+                <Icon name="slash" size={13} />
+                {t.lens.axisStart(axisOldest, axisHidden)}
+              </span>
+            </li>
+          )}
         </ol>
       </section>
     </div>
@@ -212,6 +274,10 @@ function TimelineGap({ count, from, to, t }) {
 }
 function TimelineRow({ row, t, go, last }) {
   const fail = row.result === "fail";
+  const li = row.lensInfo || null;
+  const rowTarget = li && li.sample !== "canonical"
+    ? { view:"explorer", version:row.version, capture:li.sample }
+    : { view:"explorer", version:row.version };
   const [hover, setHover] = React.useState(false);
   /* Stretched-button pattern: the row's primary action is a full-bleed sibling
      button UNDER the visual content (interactive elements must not nest), and
@@ -219,8 +285,8 @@ function TimelineRow({ row, t, go, last }) {
      keyboard-reachable, in DOM order row → variant. */
   return (
     <li style={{ position:"relative" }}>
-      <button disabled={fail} onClick={()=>go({ view:"explorer", version:row.version })}
-        aria-label={fail ? `${row.version} — ${t.noCapture}` : `${row.version} · ${shortModel(row.model)}`}
+      <button disabled={fail} onClick={()=>go(rowTarget)}
+        aria-label={fail ? `${row.version} — ${t.noCapture}` : `${row.version} · ${shortModel(row.model)}${li ? ` · ${li.lens}` : ""}`}
         onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}
         style={{ position:"absolute", inset:0, width:"100%", border:"none", borderRadius:"var(--radius-3)",
           background: hover && !fail ? "var(--surface-well)" : "transparent", cursor: fail ? "default" : "pointer",
@@ -241,13 +307,20 @@ function TimelineRow({ row, t, go, last }) {
         <span>
           {fail
             ? <span style={{ display:"inline-flex", alignItems:"center", gap:7, fontFamily:"var(--font-ui)", fontSize:"var(--t-sm)", color:"var(--text-faint)" }}><Icon name="slash" size={14} /> {t.noCapture}</span>
-            : <DeltaSummary delta={row.delta} labels={t.delta} />}
+            : <span style={{ display:"inline-flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                {li && li.handover && <span title={t.lens.handoverTitle}><Badge tone="accent" mono>{li.handover.from} → {li.handover.to}</Badge></span>}
+                {li && li.sourceSwitch && <span title={t.lens.pinnedTitle}><Badge tone="neutral">{t.lens.pinned}</Badge></span>}
+                <DeltaSummary delta={row.delta} labels={t.delta} />
+              </span>}
         </span>
         <span style={{ display:"flex", alignItems:"center", gap:12, justifySelf:"end" }}>
           {/* Variant badges: up to 3 shown (data layer orders real alternate
               models first), the rest collapse into +N → explorer's CAPTURES. */}
           {!fail && row.variants && row.variants.length > 0 && (()=>{
-            const all = (DATA.VERSIONS[row.version]||{}).variants || [];
+            /* Under a lens the row already IS the family sample (model column +
+               route say so) — drop that badge; the rest remain as jump points
+               to the OTHER axes. */
+            const all = ((DATA.VERSIONS[row.version]||{}).variants || []).filter(va => !li || va.id !== li.sample);
             const shown = all.slice(0, 3), hidden = all.slice(3);
             const vbStyle = { pointerEvents:"auto", cursor:"pointer", display:"inline-flex", border:"none", background:"none", padding:0 };
             const dim = (e)=>{ e.currentTarget.style.opacity="0.72"; }, undim = (e)=>{ e.currentTarget.style.opacity="1"; };
@@ -361,7 +434,7 @@ function WhatChanged({ delta, t, version, go, pair }) {
       {jump && (
         <button onClick={jump} style={{ justifySelf:"start", display:"inline-flex", alignItems:"center", gap:6, marginTop:6, border:"none", background:"none", padding:0, cursor:"pointer",
           fontFamily:"var(--font-ui)", fontSize:"var(--t-caption)", fontWeight:"var(--w-medium)", color:"var(--brand)" }}>
-          <Icon name="compare" size={13} /> {t.jumpToDiff} {fromV} → {pair ? pair.toLabel : version}
+          <Icon name="compare" size={13} /> {t.jumpToDiff} {pair && pair.fromLabel ? pair.fromLabel : fromV} → {pair ? pair.toLabel : version}
         </button>
       )}
     </div>
@@ -369,20 +442,25 @@ function WhatChanged({ delta, t, version, go, pair }) {
 }
 
 /* ---------- Explorer ---------- */
-function ExplorerView({ t, locale, version, capture, go, backRoute }) {
+function ExplorerView({ t, locale, version, capture, go, backRoute, homeLens }) {
   const detail = getDetail(version);
   const [tab, setTab] = React.useState("system");
   const variantIdx = (capture && detail && detail.variants) ? detail.variants.findIndex(v=>v.id===capture) : -1;
   const setVariantIdx = (i)=>{ const va = (i>=0 && detail && detail.variants) ? detail.variants[i] : null;
     go(va ? { view:"explorer", version, capture: va.id } : { view:"explorer", version }); };
   const idx = DATA.INDEX.find(x=>x.version===version);
-  const { prev, next } = neighbors(version);
+  const axis = axisContext(version, capture);
+  const { prev, next } = axis
+    ? { prev: axis.prev ? axis.prev.version : null, next: axis.next ? axis.next.version : null }
+    : neighbors(version);
+  const prevRoute = axis && axis.prev ? { view:"explorer", version:axis.prev.version, ...(axis.prev.sample!=="canonical" ? { capture:axis.prev.sample } : {}) } : null;
+  const nextRoute = axis && axis.next ? { view:"explorer", version:axis.next.version, ...(axis.next.sample!=="canonical" ? { capture:axis.next.sample } : {}) } : null;
   const clEntry = CHANGELOG.entries[version] || null;
 
   if (!detail || detail.result === "fail") {
     return (
       <div style={{ maxWidth:"var(--container)", margin:"0 auto", padding:"40px 24px 80px" }}>
-        <BackBar t={t} go={go} prev={prev} next={next} backRoute={backRoute} />
+        <BackBar t={t} go={go} prev={prev} next={next} prevRoute={prevRoute} nextRoute={nextRoute} backRoute={backRoute} homeLens={homeLens} />
         <div style={{ maxWidth:"var(--container-narrow)", margin:"28px auto 0" }}>
           <div style={{ border:"1px solid var(--line-hairline)", borderRadius:"var(--radius-4)", padding:"48px 40px", textAlign:"center", background:"var(--surface-card)" }}>
             <div style={{ display:"inline-flex", marginBottom:14, color:"var(--text-faint)" }}><Icon name="slash" size={28} /></div>
@@ -420,7 +498,7 @@ function ExplorerView({ t, locale, version, capture, go, backRoute }) {
 
   return (
     <div style={{ maxWidth:"var(--container)", margin:"0 auto", padding:"32px 24px 96px" }}>
-      <BackBar t={t} go={go} prev={prev} next={next} backRoute={backRoute} />
+      <BackBar t={t} go={go} prev={prev} next={next} prevRoute={prevRoute} nextRoute={nextRoute} backRoute={backRoute} homeLens={homeLens} />
 
       <div style={{ marginTop:26, display:"flex", alignItems:"flex-start", gap:16, flexWrap:"wrap" }}>
         <div style={{ flex:1, minWidth:280 }}>
@@ -441,7 +519,9 @@ function ExplorerView({ t, locale, version, capture, go, backRoute }) {
             onMouseLeave={(e)=>{ e.currentTarget.style.color="var(--text-muted)"; e.currentTarget.style.borderColor="var(--line-hairline)"; }}>
             <Icon name="download" size={16} />
           </button>
-          <Button variant="secondary" iconLeft={<Icon name="compare" size={16} />} onClick={()=>go({ view:"compare", from: prevOf(version)||version, to: version })}>{t.compareVersions}</Button>
+          <Button variant="secondary" iconLeft={<Icon name="compare" size={16} />} onClick={()=>go({ view:"compare",
+            from: axis && axis.prev ? axis.tok(axis.prev) : (prevOf(version)||version),
+            to: axis ? axis.tok(axis.row) : version })}>{t.compareVersions}</Button>
         </div>
       </div>
 
@@ -463,6 +543,22 @@ function ExplorerView({ t, locale, version, capture, go, backRoute }) {
         <div style={{ margin:"22px 0 8px", padding:"16px 18px", border:"1px solid var(--line-hairline)", borderRadius:"var(--radius-3)", background:"var(--surface-tint)" }}>
           <Eyebrow style={{ marginBottom:12 }}>{t.whatChanged}</Eyebrow>
           <WhatChanged delta={idx.delta} t={t} version={version} go={go} />
+        </div>
+      )}
+      {/* Viewing a family's axis sample: what changed ALONG THE AXIS — the model
+          axis panel above answers the orthogonal per-version question. */}
+      {activeVariant && axis && axis.row.delta && deltaHasChange(axis.row.delta) && (
+        <div style={{ margin:"22px 0 8px", padding:"16px 18px", border:"1px solid var(--line-hairline)", borderRadius:"var(--radius-3)", background:"var(--surface-tint)" }}>
+          <Eyebrow style={{ marginBottom:12 }}>{t.whatChanged}</Eyebrow>
+          <WhatChanged delta={axis.row.delta} t={t} version={version} go={go}
+            pair={axis.prev ? {
+              from: axis.tok(axis.prev),
+              // Side-faithful labels: a side carries "⎇ model" iff that side is
+              // a pinned sample — same rule the model-axis panel follows.
+              fromLabel: axis.prev.sample !== "canonical"
+                ? `${axis.prev.version} ⎇ ${shortModel(axis.prev.model)}`
+                : axis.prev.version,
+              to: axis.tok(axis.row), toLabel: `${version} ⎇ ${shortModel(axis.row.model)}` } : null} />
         </div>
       )}
 
@@ -684,20 +780,20 @@ function downloadCapture(detail, version, variantId){
   setTimeout(()=>URL.revokeObjectURL(url), 2000);
 }
 
-function BackBar({ t, go, prev, next, backRoute }) {
+function BackBar({ t, go, prev, next, prevRoute, nextRoute, backRoute, homeLens }) {
   // Referrer-aware back: arriving from a compare (the changelog-span chips are
   // the only compare→explorer path today) returns there, focused on the
   // changelog section; otherwise — direct links, refreshes — back to timeline,
   // which also stays one click away in the header nav.
   const back = backRoute
     ? { label: `${t.backToCompare} ${backRoute.from} → ${backRoute.to}`, route: { ...backRoute, focus: backRoute.focus || "changelog" } }
-    : { label: t.backToTimeline, route: { view:"timeline" } };
+    : { label: t.backToTimeline, route: { view:"timeline", ...(homeLens ? { lens: homeLens } : {}) } };
   return (
     <div style={{ display:"flex", alignItems:"center", gap:12 }}>
       <Button variant="ghost" size="sm" iconLeft={<Icon name="arrowL" size={15} />} onClick={()=>go(back.route)}>{back.label}</Button>
       <div style={{ flex:1 }} />
-      {prev && <VersionChip version={prev} size="sm" onClick={()=>go({ view:"explorer", version:prev })} />}
-      {next && <VersionChip version={next} size="sm" onClick={()=>go({ view:"explorer", version:next })} />}
+      {prev && <VersionChip version={prev} size="sm" onClick={()=>go(prevRoute || { view:"explorer", version:prev })} />}
+      {next && <VersionChip version={next} size="sm" onClick={()=>go(nextRoute || { view:"explorer", version:next })} />}
     </div>
   );
 }
@@ -1613,6 +1709,7 @@ function routeToHash(route, locale){
   if (route.view === "explorer") { p.push("v", encodeURIComponent(route.version)); if (route.capture) p.push(encodeURIComponent(route.capture)); }
   else if (route.view === "compare") p.push("diff", encodeURIComponent(route.from), encodeURIComponent(route.to));
   else if (route.view === "anatomy") p.push("anatomy");
+  else if (route.view === "timeline" && route.lens) p.push("lens", route.lens);
   let h = p.join("/");
   if (route.view === "compare" && route.focus) h += "?focus=" + encodeURIComponent(route.focus);
   return "#" + h;
@@ -1626,6 +1723,7 @@ function parseHash(){
   if (seg[0] === "v" && seg[1]) route = { view: "explorer", version: seg[1], ...(seg[2] ? { capture: seg[2] } : {}) };
   else if (seg[0] === "diff" && seg[1] && seg[2]) route = { view: "compare", from: seg[1], to: seg[2] };
   else if (seg[0] === "anatomy") route = { view: "anatomy" };
+  else if (seg[0] === "lens" && ["sonnet","haiku","fable"].includes(seg[1])) route = { view: "timeline", lens: seg[1] };
   if (query && route.view === "compare") { const m = query.match(/focus=([^&]+)/); if (m) route.focus = decodeURIComponent(m[1]); }
   return { locale, route };
 }
@@ -1638,6 +1736,8 @@ function App() {
   const navRef = React.useRef({ prev: null, cur: init.route });
   if (navRef.current.cur !== route) navRef.current = { prev: navRef.current.cur, cur: route };
   const cameFromCompare = navRef.current.prev && navRef.current.prev.view === "compare" ? navRef.current.prev : null;
+  // Arriving from a lens timeline: the explorer's back bar returns to that lens, not the default view.
+  const cameFromLens = navRef.current.prev && navRef.current.prev.view === "timeline" && navRef.current.prev.lens ? navRef.current.prev.lens : null;
   // localStorage access can throw (e.g. Chromium "block all cookies", some
   // file:// configurations) — reads must be as guarded as the writes below.
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
@@ -1672,8 +1772,8 @@ function App() {
       <SkipLink t={t} />
       <Header t={t} route={route} go={go} locale={locale} setLocale={setLocale} theme={theme} setTheme={setTheme} onSearch={()=>setSearch(true)} />
       <main id="main" tabIndex={-1} style={{ flex:1, outline:"none" }}>
-        {route.view==="timeline" && <TimelineView t={t} go={go} />}
-        {route.view==="explorer" && <ExplorerView t={t} locale={locale} version={route.version} capture={route.capture} go={go} backRoute={cameFromCompare} />}
+        {route.view==="timeline" && <TimelineView t={t} go={go} lens={route.lens} />}
+        {route.view==="explorer" && <ExplorerView t={t} locale={locale} version={route.version} capture={route.capture} go={go} backRoute={cameFromCompare} homeLens={cameFromLens} />}
         {route.view==="compare" && <CompareView t={t} locale={locale} from={route.from} to={route.to} go={go} focus={route.focus} />}
         {route.view==="anatomy" && <AnatomyView t={t} />}
       </main>

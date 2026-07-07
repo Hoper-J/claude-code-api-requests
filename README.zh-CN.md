@@ -17,6 +17,7 @@
 - CLAUDE.md、memory、hook 输出、skill 列表，这些是怎么被组织在请求体中的（[结构 →](https://api-requests.cc/#/zh/anatomy)）
 - 官方提到的使用 `ToolSearch` 减少 MCP 的上下文占用，实际在哪个版本引入？实际表现是什么？（[完整推演 →](corpus/findings.zh-CN.md)）
 - Fable-5 相对于 Opus-4-8 在 System 块中 Harness 的变更，以及新增的 Communicating with the user 部分（[2.1.170 Opus-4-8 vs Fable-5 →](https://api-requests.cc/#/zh/diff/2.1.170/2.1.170@claude-fable-5-1m)）
+- 固定某个模型族看请求的演变——时间线可切换到族轴视角（[sonnet 视角 →](https://api-requests.cc/#/zh/lens/sonnet)）
 
 ## 快速访问
 

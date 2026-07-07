@@ -17,6 +17,7 @@ I'd always been curious how an industry-bellwether product like Claude Code hand
 - How are CLAUDE.md, memory, hook output, and the skill list organized into the request body? ([anatomy →](https://api-requests.cc/#/en/anatomy))
 - The official advice to use `ToolSearch` to cut MCP's context footprint — which version actually introduced it, and how does it behave? ([full walkthrough →](corpus/findings.md))
 - Fable-5 vs Opus-4-8: the changes to the Harness section of the System block, plus the new "Communicating with the user" part ([2.1.170 Opus-4-8 vs Fable-5 →](https://api-requests.cc/#/en/diff/2.1.170/2.1.170@claude-fable-5-1m))
+- How the request evolved along a fixed model family — switch the timeline to a family axis ([sonnet lens →](https://api-requests.cc/#/en/lens/sonnet))
 
 ## Quick start
 

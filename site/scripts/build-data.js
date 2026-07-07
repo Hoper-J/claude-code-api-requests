@@ -281,7 +281,8 @@ for (const v of versions) {
       CAP_DAY = (String(vstatus.captured_at || status.captured_at || "").match(/^20\d\d-\d\d-\d\d/) || [null])[0];
       const det = parseCapture(vfull, status.regime || "js");
       det.captured_at = CAP_DAY;
-      delete det._toolNames; delete det._injectedBody;
+      /* _toolNames/_injectedBody stay until the lens chains are computed; the
+         cleanup loop below the INDEX strips them from variants too. */
       const ax = vstatus.model_axis_diff || {};
       rec.variants.push({
         id, pinned_model: vstatus.pinned_model || null, model_in_request: vstatus.model_in_request || det.model,
@@ -291,9 +292,19 @@ for (const v of versions) {
     }
     /* Informative-first order: variants pinned to a DIFFERENT model before ones
        pinned to the default model itself — anything reading variants[0] (e.g.
-       the timeline badge) gets a real alternate model, not a duplicate. */
+       the timeline badge) gets a real alternate model, not a duplicate.
+       Families sort alphabetically; INSIDE a family the newest generation
+       comes first (sonnet-5 before sonnet-4-5 at a handover version). */
+    const famBase = m => String(m || "").replace(/^claude-/, "").replace(/-\d{8}$/, "");
+    const famName = m => famBase(m).replace(/[-\d].*$/, "");
+    const famNums = m => (famBase(m).match(/\d+/g) || []).map(Number);
+    const genDesc = (a, b) => { const x = famNums(a), y = famNums(b);
+      for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (y[i] || 0) - (x[i] || 0); if (d) return d; } return 0; };
     rec.variants.sort((a, b) =>
-      ((a.model_in_request === rec.model) - (b.model_in_request === rec.model)) || a.id.localeCompare(b.id));
+      ((a.model_in_request === rec.model) - (b.model_in_request === rec.model)) ||
+      famName(a.model_in_request).localeCompare(famName(b.model_in_request)) ||
+      genDesc(a.model_in_request, b.model_in_request) ||
+      a.id.localeCompare(b.id));
     if (!rec.variants.length) delete rec.variants;
   }
   parsed[v] = rec;
@@ -307,12 +318,8 @@ for (const v of versions) {
 // (today that's nothing; it lights up the day an unnamed param appears).
 const KNOWN_BODY_KEYS = new Set(["model","system","tools","messages","max_tokens","temperature","stream","thinking","diagnostics","metadata","context_management","output_config","fallbacks"]);
 const j = x => JSON.stringify(x ?? null);
-const deltas = {};
-let prevMain = null;
-for (const v of versions) {
-  const cur = parsed[v]; if (!cur) continue;
-  if (!prevMain) { deltas[v] = null; }
-  else {
+// Delta between two parsed captures (canonical chain and lens chains share it).
+function computeDelta(prevMain, cur) {
     const d = {};
     const pN = Object.keys(prevMain._toolNames), cN = Object.keys(cur._toolNames);
     const pSet = new Set(pN), cSet = new Set(cN);
@@ -341,8 +348,13 @@ for (const v of versions) {
     const bkr = (prevMain.body_keys || []).filter(x => !cBK.has(x) && !KNOWN_BODY_KEYS.has(x)); if (bkr.length) d.body_keys_removed = bkr;
     if (prevMain.max_tokens !== cur.max_tokens) d.max_tokens_changed = { from: prevMain.max_tokens, to: cur.max_tokens };
     if (prevMain.model !== cur.model) d.model_changed = { from: prevMain.model, to: cur.model };
-    deltas[v] = d;
-  }
+    return d;
+}
+const deltas = {};
+let prevMain = null;
+for (const v of versions) {
+  const cur = parsed[v]; if (!cur) continue;
+  deltas[v] = prevMain ? computeDelta(prevMain, cur) : null;
   if (!cur.aux) prevMain = cur;
 }
 
@@ -354,12 +366,55 @@ const INDEX = [...versions].sort((a, b) => cmpV(b, a)).map(v => {
   if (rec.variants) row.variants = rec.variants.map(x => x.id);
   return row;
 });
-for (const v of versions) { const r = parsed[v]; if (r) { delete r._toolNames; delete r._injectedBody; } }
+/* ---------- model-family lenses (timeline axes) ---------- */
+// Per family, resolve the sample that represents it at each version — the
+// newest-generation pinned variant present, else the canonical request when
+// the default model itself belongs to the family — and chain deltas along the
+// axis. Adding a future generation = one entry at the head of `variants`.
+const FAMILIES = {
+  sonnet: { variants: ["claude-sonnet-5", "claude-sonnet-4-5"], canonical: /^claude-sonnet/ },
+  haiku:  { variants: ["claude-haiku-4-5"], canonical: /^claude-haiku/ },
+  fable:  { variants: ["claude-fable-5-1m"], canonical: /^claude-fable/ },
+};
+const shortM = m => String(m || "").replace(/^claude-/, "").replace(/-\d{8}$/, "");
+const LENSES = {};
+for (const [fam, def] of Object.entries(FAMILIES)) {
+  const chain = [];
+  let prevDet = null, prevSample = null;
+  for (const v of versions) {
+    const rec = parsed[v]; if (!rec || rec.aux) continue;
+    let sample = null, det = null;
+    for (const vid of def.variants) {
+      const hit = (rec.variants || []).find(x => x.id === vid);
+      if (hit) { sample = vid; det = hit.detail; break; }
+    }
+    if (!sample && def.canonical.test(rec.model || "")) { sample = "canonical"; det = rec; }
+    if (!sample) continue;
+    const row = { version: v, sample, model: det.model, tools_count: det.tools_count };
+    if (prevDet) {
+      const d = computeDelta(prevDet, det);
+      if (prevSample !== sample && (prevSample === "canonical" || sample === "canonical")) {
+        row.sourceSwitch = true;
+        // canonical resolves the dated model id, a pin passes the alias through —
+        // same model, different spelling; not a model change.
+        if (d.model_changed && shortM(d.model_changed.from) === shortM(d.model_changed.to)) delete d.model_changed;
+      }
+      if (shortM(prevDet.model) !== shortM(det.model)) row.handover = { from: shortM(prevDet.model), to: shortM(det.model) };
+      row.delta = d;
+    } else row.delta = null;
+    chain.push(row);
+    prevDet = det; prevSample = sample;
+  }
+  chain.sort((a, b) => cmpV(b.version, a.version));  // newest-first, like INDEX
+  LENSES[fam] = chain;
+}
+
+for (const v of versions) { const r = parsed[v]; if (r) { delete r._toolNames; delete r._injectedBody; (r.variants || []).forEach(x => { delete x.detail._toolNames; delete x.detail._injectedBody; }); } }
 const mains = versions.filter(v => parsed[v] && !parsed[v].aux).length;
 const COUNTS = { total: versions.length, ok: mains, aux: AUX.size, fail: failSet.size };
 
 /* ---------- serialize + PII gate ---------- */
-const out = { COUNTS, BLOCKS, TOOLDEFS, MESSAGES, VERSIONS, INDEX };
+const out = { COUNTS, BLOCKS, TOOLDEFS, MESSAGES, VERSIONS, INDEX, LENSES };
 const json = JSON.stringify(out);
 const leaks = [];
 for (const [name, re] of [
