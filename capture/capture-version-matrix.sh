@@ -38,8 +38,9 @@ JS_NODE=""                        # auto-resolved (nvm LTS) below; override with
 PROMPT="Reply with the single word: ping"
 MODEL=""                          # unset => each version's default
 CAP_TIMEOUT="60s"                 # ccwrap capture --timeout (request wait)
-HARD_TIMEOUT=600                  # outer per-version wall clock (install+capture)
-INSTALL_TIMEOUT=700               # npm install per version. Newer builds bundle a
+HARD_TIMEOUT=600                  # outer wall clock for the CAPTURE phase (install
+                                  # is guarded separately by INSTALL_TIMEOUT)
+INSTALL_TIMEOUT=1800              # npm install per version. Newer builds bundle a
                                   # ~200MB native binary; a slow-but-progressing
                                   # download legitimately needs ~400s. npm's own
                                   # fetch-timeout still guards a truly stuck connection.
@@ -256,7 +257,12 @@ resolve_target() {
     echo "js|$JS_NODE|$pkg/cli.js"; return 0
   fi
   local cand
-  for cand in "$pkg/bin/claude" "$vdir/node_modules/.bin/claude"; do
+  # Native-era packaging (thin wrapper, long-standing): the real binary ships in
+  # a platform optionalDependency (@anthropic-ai/claude-code-<platform>/claude)
+  # and a postinstall copies it over the bin/claude.exe placeholder. An install
+  # killed before postinstall (slow download + timeout) strands the stub in bin/,
+  # so besides bin/claude.exe also probe the platform package's binary directly.
+  for cand in "$pkg/bin/claude" "$pkg/bin/claude.exe" "$vdir"/node_modules/@anthropic-ai/claude-code-*/claude "$vdir/node_modules/.bin/claude"; do
     if [ -e "$cand" ] && probe_ok "$cand"; then echo "native|$cand"; return 0; fi
   done
   echo "fail|"; return 1
