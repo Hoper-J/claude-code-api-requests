@@ -176,6 +176,9 @@ const inject = (re, content, what) => {
 // head: favicon → data URI; stylesheet → inline; pre-paint theme script first
 inject(/<link rel="icon"[^>]*>/, themeScript + `\n<link rel="icon" type="image/svg+xml" href="${favicon}">`, "favicon link");
 inject(/<link rel="stylesheet"[^>]*>/, `<style>\n${css}</style>`, "stylesheet link");
+// feed autodiscovery is an online-site affordance — meaningless in a local file (the
+// in-app subscribe view carries absolute feed URLs instead)
+html = html.replace(/[ \t]*<link rel="alternate" type="application\/atom\+xml"[^>]*>\n?/g, "");
 // body: splash + noscript
 inject(/<div id="root"><\/div>/, splash, "#root");
 // vendor: three self-hosted tags → two inline production UMDs (Babel dropped — JSX is precompiled below)

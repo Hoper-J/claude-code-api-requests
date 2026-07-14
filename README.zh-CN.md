@@ -6,7 +6,7 @@
 
 [![gates](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml/badge.svg)](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml) [![license](https://img.shields.io/github/license/Hoper-J/claude-code-api-requests)](LICENSE)
 
-**在线访问：[api-requests.cc](https://api-requests.cc)**
+**在线访问：[api-requests.cc](https://api-requests.cc)** · [Atom 订阅](https://api-requests.cc/feed.zh-CN.xml)
 
 ![时间线视图](assets/lineage-timeline.png)
 
@@ -55,6 +55,7 @@ git clone https://github.com/Hoper-J/claude-code-api-requests && cd claude-code-
 | `node site/scripts/build-changelog.js` | 官方 changelog 快照 → `changelog-data.js` | [corpus/changelog/README.zh-CN.md](corpus/changelog/README.zh-CN.md) |
 | `node site/scripts/build-changelog-zh.js [--status\|--missing\|--check\|--apply\|--apply-list]` | 中文译文管线（agent 接口） | [site/i18n/README.zh-CN.md](site/i18n/README.zh-CN.md) |
 | `node site/scripts/build-offline.js` | 离线阅读界面 `claude-code-api-requests-offline.html` | [site/vendor/README.zh-CN.md](site/vendor/README.zh-CN.md) |
+| `node site/scripts/build-feed.js` | 由构建产物生成 Atom 订阅 `feed.xml` / `feed.zh-CN.xml`（最后运行） | [site/README.zh-CN.md](site/README.zh-CN.md) |
 
 ## 一些说明
 

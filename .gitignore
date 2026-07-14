@@ -30,6 +30,9 @@ dist/
 # Build output — regenerate from corpus/changelog/ + site/i18n/ (build-changelog.js, build-changelog-zh.js)
 /site/public/changelog-data.js
 /site/public/changelog-zh.js
+# Build output — regenerate from the three artifacts above (build-feed.js, run last)
+/site/public/feed.xml
+/site/public/feed.zh-CN.xml
 
 # capture engine scratch written under corpus/ (ROOT)
 /corpus/_cache/

@@ -6,7 +6,7 @@
 
 [![gates](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml/badge.svg)](https://github.com/Hoper-J/claude-code-api-requests/actions/workflows/gates.yml) [![license](https://img.shields.io/github/license/Hoper-J/claude-code-api-requests)](LICENSE)
 
-**Live site: [api-requests.cc](https://api-requests.cc)**
+**Live site: [api-requests.cc](https://api-requests.cc)** · [Atom feed](https://api-requests.cc/feed.xml)
 
 ![Timeline view](assets/lineage-timeline.png)
 
@@ -55,6 +55,7 @@ The data files in `corpus/` are **masked in place** by `sanitize/sanitize.js`, p
 | `node site/scripts/build-changelog.js` | Official changelog snapshot → `changelog-data.js` | [corpus/changelog/README.md](corpus/changelog/README.md) |
 | `node site/scripts/build-changelog-zh.js [--status\|--missing\|--check\|--apply\|--apply-list]` | Chinese-translation pipeline (agent interface) | [site/i18n/README.md](site/i18n/README.md) |
 | `node site/scripts/build-offline.js` | Offline single-file reader `claude-code-api-requests-offline.html` | [site/vendor/README.md](site/vendor/README.md) |
+| `node site/scripts/build-feed.js` | Atom feeds `feed.xml` / `feed.zh-CN.xml` from the built artifacts (run last) | [site/README.md](site/README.md) |
 
 ## Notes
 

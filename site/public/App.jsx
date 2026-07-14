@@ -1617,7 +1617,7 @@ function snip(text, idx, len){ const start=Math.max(0, idx-28); const end=Math.m
 function Eyebrow({ children, style }) {
   return <div style={{ fontFamily:"var(--font-ui)", fontSize:"var(--t-caption)", textTransform:"uppercase", letterSpacing:"var(--track-over)", fontWeight:600, color:"var(--text-muted)", ...style }}>{children}</div>;
 }
-function Footer({ t }) {
+function Footer({ t, locale, go }) {
   return (
     <footer style={{ borderTop:"1px solid var(--line-hairline)", marginTop:20 }}>
       <div style={{ maxWidth:"var(--container)", margin:"0 auto", padding:"26px 24px", display:"flex", alignItems:"center", gap:14, flexWrap:"wrap" }}>
@@ -1625,6 +1625,14 @@ function Footer({ t }) {
         <span style={{ fontFamily:"var(--font-ui)", fontSize:"var(--t-caption)", color:"var(--text-faint)" }}>{window.LINEAGE_OFFLINE ? t.footerTaglineOffline(DATA.COUNTS.total, window.LINEAGE_OFFLINE.built) : t.footerTagline(DATA.COUNTS.total)}</span>
         <span style={{ flex:1 }} />
         <span style={{ display:"inline-flex", alignItems:"center", gap:12, fontFamily:"var(--font-mono)", fontSize:"var(--t-micro)", color:"var(--text-faint)" }}>
+          <a href={"#/" + locale + "/subscribe"}
+            onClick={(e)=>{ if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return; e.preventDefault(); go({ view:"subscribe" }); }}
+            style={{ display:"inline-flex", alignItems:"center", gap:6, color:"var(--text-faint)", textDecoration:"none" }}
+            onMouseEnter={(e)=>{ e.currentTarget.style.color="var(--text-strong)"; }}
+            onMouseLeave={(e)=>{ e.currentTarget.style.color="var(--text-faint)"; }}>
+            <Icon name="rss" size={13} /> {t.footerSubscribe}
+          </a>
+          <span style={{ color:"var(--line-strong)" }}>|</span>
           {window.LINEAGE_OFFLINE && <>
             <a href="https://api-requests.cc" target="_blank" rel="noopener noreferrer"
               style={{ color:"var(--text-faint)", textDecoration:"none" }}
@@ -1699,6 +1707,48 @@ function AnatomyView({ t }) {
   );
 }
 
+/* ---------- Subscribe ---------- */
+/* Absolute URLs on purpose: the offline bundle renders this view too, and a
+   relative /feed.xml would resolve against file:// there. */
+const FEED_URLS = { en: "https://api-requests.cc/feed.xml", zh: "https://api-requests.cc/feed.zh-CN.xml" };
+function SubscribeView({ t, locale }) {
+  const S = t.subscribe;
+  const mine = FEED_URLS[locale] || FEED_URLS.en;
+  const readers = [
+    { name: "Feedly", href: "https://feedly.com/i/subscription/feed/" + encodeURIComponent(mine) },
+    { name: "Inoreader", href: "https://www.inoreader.com/?add_feed=" + encodeURIComponent(mine) },
+  ];
+  const linkStyle = { color:"var(--brand)", textDecoration:"none" };
+  const noteStyle = { margin:"14px 0 0", fontFamily:"var(--font-ui)", fontSize:"var(--t-sm)", lineHeight:1.6, color:"var(--text-muted)", textWrap:"pretty" };
+  return (
+    <div style={{ maxWidth:"var(--container-narrow)", margin:"0 auto", padding:"56px 24px 96px" }}>
+      <div style={{ maxWidth:"var(--measure-prose)" }}>
+        <Eyebrow style={{ marginBottom:16 }}>{S.nav}</Eyebrow>
+        <h1 style={{ fontSize:"var(--t-h1)", letterSpacing:"var(--track-tight)", marginBottom:16 }}>{S.title}</h1>
+        <p style={{ fontFamily:"var(--font-editorial)", fontSize:"var(--t-lead)", lineHeight:1.55, color:"var(--text-body)" }}>{S.lead}</p>
+        <div style={{ display:"grid", gap:14, margin:"32px 0 0" }}>
+          <CodeBlock label={S.feedEn} copyText={FEED_URLS.en} labels={t.code} dense>{FEED_URLS.en}</CodeBlock>
+          <CodeBlock label={S.feedZh} copyText={FEED_URLS.zh} labels={t.code} dense>{FEED_URLS.zh}</CodeBlock>
+        </div>
+        <p style={{ ...noteStyle, marginTop:24, color:"var(--text-body)" }}>
+          {S.openIn}{" "}
+          {readers.map((r, i) => (
+            <React.Fragment key={r.name}>
+              {i > 0 && <span style={{ color:"var(--text-faint)" }}> · </span>}
+              <a href={r.href} target="_blank" rel="noopener noreferrer" style={linkStyle}>{r.name}</a>
+            </React.Fragment>
+          ))}
+        </p>
+        <p style={noteStyle}>{S.autodiscover}</p>
+        <p style={noteStyle}>
+          {S.github}{" "}
+          <a href="https://github.com/Hoper-J/claude-code-api-requests" target="_blank" rel="noopener noreferrer" style={linkStyle}>Hoper-J/claude-code-api-requests</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- App ---------- */
 /* Hash routing — mirrors the production static paths:
    #/en · #/en/v/2.1.170 · #/en/diff/2.1.169/2.1.170?focus=tools · #/zh/anatomy
@@ -1709,6 +1759,7 @@ function routeToHash(route, locale){
   if (route.view === "explorer") { p.push("v", encodeURIComponent(route.version)); if (route.capture) p.push(encodeURIComponent(route.capture)); }
   else if (route.view === "compare") p.push("diff", encodeURIComponent(route.from), encodeURIComponent(route.to));
   else if (route.view === "anatomy") p.push("anatomy");
+  else if (route.view === "subscribe") p.push("subscribe");
   else if (route.view === "timeline" && route.lens) p.push("lens", route.lens);
   let h = p.join("/");
   if (route.view === "compare" && route.focus) h += "?focus=" + encodeURIComponent(route.focus);
@@ -1723,6 +1774,7 @@ function parseHash(){
   if (seg[0] === "v" && seg[1]) route = { view: "explorer", version: seg[1], ...(seg[2] ? { capture: seg[2] } : {}) };
   else if (seg[0] === "diff" && seg[1] && seg[2]) route = { view: "compare", from: seg[1], to: seg[2] };
   else if (seg[0] === "anatomy") route = { view: "anatomy" };
+  else if (seg[0] === "subscribe") route = { view: "subscribe" };
   else if (seg[0] === "lens" && ["sonnet","haiku","fable"].includes(seg[1])) route = { view: "timeline", lens: seg[1] };
   if (query && route.view === "compare") { const m = query.match(/focus=([^&]+)/); if (m) route.focus = decodeURIComponent(m[1]); }
   return { locale, route };
@@ -1776,8 +1828,9 @@ function App() {
         {route.view==="explorer" && <ExplorerView t={t} locale={locale} version={route.version} capture={route.capture} go={go} backRoute={cameFromCompare} homeLens={cameFromLens} />}
         {route.view==="compare" && <CompareView t={t} locale={locale} from={route.from} to={route.to} go={go} focus={route.focus} />}
         {route.view==="anatomy" && <AnatomyView t={t} />}
+        {route.view==="subscribe" && <SubscribeView t={t} locale={locale} />}
       </main>
-      <Footer t={t} />
+      <Footer t={t} locale={locale} go={go} />
       {search && <SearchOverlay t={t} onClose={()=>setSearch(false)} go={go} />}
     </div>
   );
