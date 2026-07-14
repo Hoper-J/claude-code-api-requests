@@ -2,7 +2,7 @@
 
 [English](findings.md) | **中文**
 
-**当前语料**：计数与切分以 `manifest.json` 的 `.counts` 为准。基线部分——2.0.0 至 2.1.201 的每个版本及其钉定模型变体——于 2026-07-06 在同一环境一次性捕获，基线内的跨版本差异反映的是版本本身的变化，而非采集日期带来的漂移；此后的新版本随发布逐个抓取（各样本自带 `captured_at`）。变体按各版本当时的模型抓取，且只在该模型不是当时默认时才单独存在：sonnet 轴在 2.0.50 及之前就是 canonical 本身（sonnet-4-5 即默认），2.0.51 起为 `claude-sonnet-4-5` 变体，2.1.197 起换用 `claude-sonnet-5`（交接版两者皆有）；`claude-haiku-4-5` 覆盖全线；`claude-fable-5[1m]` 自 2.1.170 起。默认模型链 sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8，`max_tokens` 在 2.1.76(32000) → 2.1.77(64000) 抬升。内置工具集在 2.1.196 新增 `ReportFindings`（版本门控：相同条件下对 2.1.195/2.1.196 背靠背重抓可复现该边界）。`# userEmail` 上下文块自 2.1.108 起出现，其后连续存在。
+**当前语料**：计数与切分以 `manifest.json` 的 `.counts` 为准。基线部分——2.0.0 至 2.1.201 的每个版本及其钉定模型变体——于 2026-07-06 在同一环境一次性捕获，基线内的跨版本差异反映的是版本本身的变化，而非采集日期带来的漂移；此后的新版本随发布逐个抓取（各样本自带 `captured_at`）。变体按各版本当时的模型抓取，且只在该模型不是当时默认时才单独存在：sonnet 轴在 2.0.50 及之前就是 canonical 本身（sonnet-4-5 即默认），2.0.51 起为 `claude-sonnet-4-5` 变体，2.1.197 起换用 `claude-sonnet-5`（交接版两者皆有）；`claude-haiku-4-5` 覆盖全线；`claude-fable-5[1m]` 自 2.1.170 起。默认模型链 sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8，`max_tokens` 在 2.1.76(32000) → 2.1.77(64000) 抬升。内置工具集在 2.1.196 新增 `ReportFindings`（版本门控：相同条件下对 2.1.195/2.1.196 背靠背重抓可复现该边界），2.1.207 新增 `DeferredToolPlaceholder`（观察到的边界：四条采集轴在同一版本一齐出现）。`# userEmail` 上下文块自 2.1.108 起出现，其后连续存在。
 
 ---
 
@@ -40,7 +40,7 @@
 ### MCP 承载方式
 MCP 工具 `mcp__example__echo` 的形态随版本变化，有两个阶段：
 - **2.0.66 – 2.1.68（内联）**：完整 tool schema **内联**进 `request.body.tools[]`。
-- **2.1.69 起（延迟）**：`ToolSearch` 作为 **`tools[]` 里的真工具**于 **2.1.69** 首次出现（与 MCP 停止内联同一版），此后 `tools[]` 不再内联 MCP——只有 `ToolSearch`，真正的工具名 `mcp__example__echo` 改在注入上下文的 **deferred 工具枚举**里列出（枚举所在的消息形态随"消息结构"演变，见下；deferred 提示措辞也随版本变，勿按固定句子匹配）。`ToolSearch` 这个**字符串**早在 2.1.16 就出现在别的工具描述里（如 WebFetch 的 "use ToolSearch first…"），全文 grep 会把首现误判到 2.1.16。
+- **2.1.69 起（延迟）**：`ToolSearch` 作为 **`tools[]` 里的真工具**于 **2.1.69** 首次出现（与 MCP 停止内联同一版），此后 `tools[]` 不再内联 MCP——只有 `ToolSearch`，真正的工具名 `mcp__example__echo` 改在注入上下文的 **deferred 工具枚举**里列出（枚举所在的消息形态随"消息结构"演变，见下；deferred 提示措辞也随版本变，勿按固定句子匹配）。`ToolSearch` 这个**字符串**早在 2.1.16 就出现在别的工具描述里（如 WebFetch 的 "use ToolSearch first…"），全文 grep 会把首现误判到 2.1.16。自 **2.1.207** 起，该机制在 `tools[]` 里多出第二个真工具 `DeferredToolPlaceholder`——一个保留占位符，其描述写明它用于维持 deferred 工具加载、绝不可调用。
 
 > [!note]
 >
@@ -51,14 +51,15 @@ MCP 工具 `mcp__example__echo` 的形态随版本变化，有两个阶段：
 > 当前语料中没有此形态的样本——所有采集（canonical 与变体）均在服务器连上后完成。但该竞速是 headless `-p` 固有的：条件不利时采集仍可能输掉（仓库 git 历史保留的早期快照就在 2.1.153–2.1.173 一段输过）。
 
 ### 注入消息的结构演变
-`messages[]` 的形态当前分四代：
+`messages[]` 的形态当前分五代：
 
 - **2.0.0 – 2.1.68**：单条 user 消息（content 数组）。
 - **2.1.69 – 2.1.109**：**两条 user 消息**——第一条是 **string 型** content，内容即 `<available-deferred-tools>` 枚举（deferred 机制初代承载）；第二条是 4 块的数组。
 - **2.1.110 – 2.1.153**：并回**单条 user 消息**（5 块数组），deferred 枚举改为数组内的 system-reminder 块（固定句式 "The following deferred tools…" 自这一代起出现）。
-- **2.1.154 起**：user（2 块） + 一条 string 型 `role:"system"` 消息，deferred/技能/钩子上下文并入后者。
+- **2.1.154 – 2.1.206**：user（2 块） + 一条 string 型 `role:"system"` 消息，deferred/技能/钩子上下文并入后者。
+- **2.1.207 起**：仍是这两条消息的布局，但 system 消息的 content 变为携带 `cache_control` 的单块**数组**——缓存断点从最后一条 user 消息挪到 system 消息上。
 
-> 两个扫描坑：`content` 可能是 string 而非数组（2.1.69–2.1.109 与 2.1.154+），只遍历数组会漏判；user 消息也不一定只有一条。
+> 两个扫描坑：`content` 可能是 string 而非数组（2.1.69–2.1.109 与 2.1.154–2.1.206），只遍历数组会漏判；user 消息也不一定只有一条。
 > 可以把"工具名出现"和"是否内联 schema"分开展示——这是 ToolSearch 机制引入的一个独立演进维度。
 
 ### 使用 `--system-prompt-file` 会发生什么？

@@ -2,7 +2,7 @@
 
 **English** | [中文](findings.zh-CN.md)
 
-**Current corpus**: counts and slicing go by `manifest.json`'s `.counts`. The baseline — 2.0.0 through 2.1.201, every version and every pinned-model variant — was captured in one pass on 2026-07-06 in a single environment, so within it cross-version differences read as version signal rather than capture-date drift; versions after the baseline are captured as they ship (each sample records its own `captured_at`). Variants follow each model family's era, and exist only where the model isn't already that version's default: the sonnet axis is the canonical request itself through 2.0.50 (sonnet-4-5 was the default), the `claude-sonnet-4-5` variant from 2.0.51, and hands over to `claude-sonnet-5` from 2.1.197 (the handover version carries both); `claude-haiku-4-5` covers the whole line; `claude-fable-5[1m]` starts at 2.1.170. Default model chain sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8, with `max_tokens` raised at 2.1.76(32000) → 2.1.77(64000). The built-in tool set gains `ReportFindings` at 2.1.196 (version-gated: back-to-back re-captures of 2.1.195/2.1.196 under identical conditions reproduce the boundary). The `# userEmail` context block appears from 2.1.108 and is present continuously after.
+**Current corpus**: counts and slicing go by `manifest.json`'s `.counts`. The baseline — 2.0.0 through 2.1.201, every version and every pinned-model variant — was captured in one pass on 2026-07-06 in a single environment, so within it cross-version differences read as version signal rather than capture-date drift; versions after the baseline are captured as they ship (each sample records its own `captured_at`). Variants follow each model family's era, and exist only where the model isn't already that version's default: the sonnet axis is the canonical request itself through 2.0.50 (sonnet-4-5 was the default), the `claude-sonnet-4-5` variant from 2.0.51, and hands over to `claude-sonnet-5` from 2.1.197 (the handover version carries both); `claude-haiku-4-5` covers the whole line; `claude-fable-5[1m]` starts at 2.1.170. Default model chain sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8, with `max_tokens` raised at 2.1.76(32000) → 2.1.77(64000). The built-in tool set gains `ReportFindings` at 2.1.196 (version-gated: back-to-back re-captures of 2.1.195/2.1.196 under identical conditions reproduce the boundary) and `DeferredToolPlaceholder` at 2.1.207 (observed boundary: all four capture axes gain it in the same version). The `# userEmail` context block appears from 2.1.108 and is present continuously after.
 
 ---
 
@@ -40,7 +40,7 @@ To avoid mixing in the skills/plugins/MCP actually installed in the environment,
 ### MCP carriage
 The form of the MCP tool `mcp__example__echo` changes by version, in two stages:
 - **2.0.66 – 2.1.68 (inline)**: the full tool schema is **inlined** into `request.body.tools[]`.
-- **From 2.1.69 (deferred)**: `ToolSearch` first appears as **a real tool in `tools[]`** at **2.1.69** (the same version MCP stops being inlined); after that `tools[]` no longer inlines MCP — only `ToolSearch`, and the real tool name `mcp__example__echo` is listed in the **deferred-tools enumeration** in the injected context (the message form that carries the enumeration evolves with the "message structure", see below; the deferred-note wording also changes by version, so don't match a fixed sentence). The **string** `ToolSearch` appears in other tool descriptions as early as 2.1.16 (e.g. WebFetch's "use ToolSearch first…"), so a full-text grep would mis-measure it as early as 2.1.16.
+- **From 2.1.69 (deferred)**: `ToolSearch` first appears as **a real tool in `tools[]`** at **2.1.69** (the same version MCP stops being inlined); after that `tools[]` no longer inlines MCP — only `ToolSearch`, and the real tool name `mcp__example__echo` is listed in the **deferred-tools enumeration** in the injected context (the message form that carries the enumeration evolves with the "message structure", see below; the deferred-note wording also changes by version, so don't match a fixed sentence). The **string** `ToolSearch` appears in other tool descriptions as early as 2.1.16 (e.g. WebFetch's "use ToolSearch first…"), so a full-text grep would mis-measure it as early as 2.1.16. From **2.1.207** the mechanism gains a second real tool in `tools[]`: `DeferredToolPlaceholder`, a reserved placeholder whose description says it keeps deferred tool loading active and must never be called.
 
 > [!note]
 >
@@ -51,14 +51,15 @@ The form of the MCP tool `mcp__example__echo` changes by version, in two stages:
 > No sample in the current corpus exhibits this — every capture (canonical and variant) completed with the server connected. The race is inherent to headless `-p`, though: under unfavorable conditions a capture can still lose it (earlier snapshots preserved in the repo's git history did, at 2.1.153–2.1.173).
 
 ### Evolution of the injected-message structure
-The form of `messages[]` currently comes in four generations:
+The form of `messages[]` currently comes in five generations:
 
 - **2.0.0 – 2.1.68**: a single user message (content array).
 - **2.1.69 – 2.1.109**: **two user messages** — the first is a **string** content, namely the `<available-deferred-tools>` enumeration (the first-generation carrier of the deferred mechanism); the second is a 4-block array.
 - **2.1.110 – 2.1.153**: back to a **single user message** (5-block array), with the deferred enumeration moved into a system-reminder block inside the array (the fixed phrase "The following deferred tools…" appears from here).
-- **From 2.1.154**: user (2 blocks) + one string-typed `role:"system"` message, with the deferred/skills/hook context merged into the latter.
+- **2.1.154 – 2.1.206**: user (2 blocks) + one string-typed `role:"system"` message, with the deferred/skills/hook context merged into the latter.
+- **From 2.1.207**: same two-message layout, but the system message's content becomes a 1-block **array** carrying `cache_control` — the cache breakpoint moves from the last user message onto the system message.
 
-> Two scanning gotchas: `content` may be a string rather than an array (2.1.69–2.1.109 and 2.1.154+), so iterating only arrays misses cases; and the user message isn't necessarily a single one.
+> Two scanning gotchas: `content` may be a string rather than an array (2.1.69–2.1.109 and 2.1.154–2.1.206), so iterating only arrays misses cases; and the user message isn't necessarily a single one.
 > You can show "tool name appears" and "is the schema inlined" as separate things — an independent evolution axis introduced by the ToolSearch mechanism.
 
 ### What happens with `--system-prompt-file`?

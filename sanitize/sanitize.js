@@ -144,8 +144,20 @@ function tlsTransform(j) {
   }
   for (const f of TLS_GROUP_FIELDS) if (typeof j[f] === "string") j[f] = tlsLabel(f, j[f]);
   if (j.tls_groups && typeof j.tls_groups === "object") {
+    /* A fresh engine checkpoint keys new captures by RAW ja3 while older
+       versions are already labelled, so a raw key can map to a label that
+       is also present as a key — merge those groups, never overwrite.
+       Members re-sorted lexicographically (= the engine's glob order) and
+       keys by label ordinal, so output is stable across runs. */
+    const merged = {};
+    for (const k of Object.keys(j.tls_groups)) {
+      const lk = tlsLabel("ja3", k);
+      merged[lk] = (merged[lk] || []).concat(j.tls_groups[k]);
+    }
+    const ord = (k) => { const m = TLS_LABEL.exec(k); return m ? Number(m[2]) : Infinity; };
     const out = {};
-    for (const k of Object.keys(j.tls_groups)) out[tlsLabel("ja3", k)] = j.tls_groups[k];
+    for (const k of Object.keys(merged).sort((a, b) => ord(a) - ord(b) || (a < b ? -1 : 1)))
+      out[k] = merged[k].sort();
     j.tls_groups = out;
   }
   return j;
