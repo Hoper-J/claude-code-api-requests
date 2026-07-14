@@ -6,10 +6,10 @@
  "prompt": "Reply with the single word: ping",
  "model_policy": "default",
  "counts": {
-  "total": 248,
-  "ok": 248,
+  "total": 249,
+  "ok": 249,
   "fail": 0,
-  "main_inference": 248,
+  "main_inference": 249,
   "auxiliary": 0
  },
  "failed": [],
@@ -273,7 +273,8 @@
    "2.1.206",
    "2.1.207",
    "2.1.208",
-   "2.1.209"
+   "2.1.209",
+   "2.1.210"
   ]
  },
  "versions": [
@@ -452,6 +453,7 @@
   "2.1.208",
   "2.1.209",
   "2.1.21",
+  "2.1.210",
   "2.1.22",
   "2.1.23",
   "2.1.25",
