@@ -3747,6 +3747,27 @@
     "Background sessions: `/mcp` and `/install-github-app` now park a \"needs input\" request in the agent view when no client is attached": "后台会话：`/mcp` 与 `/install-github-app` 在无客户端连接时，现在会在 agent 视图中挂起一条 \"needs input\" 请求",
     "Updated the bundled dataviz skill: reordered the default chart palette and fixed guidance that suggested direct labels for four-series charts": "更新内置 dataviz 技能：调整默认图表配色顺序，并修正建议四系列图表使用直接标签的指引",
     "[VSCode] Fixed right-to-left text (Arabic, Hebrew, Persian) rendering in the wrong order when mixed with English or code": "[VSCode] 修复从右到左文字（阿拉伯语、希伯来语、波斯语）与英文或代码混排时渲染顺序错误的问题",
-    "Fixed cloud sessions dropping the in-flight message when the session's container restarts mid-turn — the interrupted turn now re-runs on resume instead of leaving the session unresponsive": "修复会话容器在轮次中途重启时云会话丢弃在途消息的问题——被打断的轮次现在会在恢复时重新运行，而不是让会话失去响应"
+    "Fixed cloud sessions dropping the in-flight message when the session's container restarts mid-turn — the interrupted turn now re-runs on resume instead of leaving the session unresponsive": "修复会话容器在轮次中途重启时云会话丢弃在途消息的问题——被打断的轮次现在会在恢复时重新运行，而不是让会话失去响应",
+    "Added emoji shortcode autocomplete in the prompt input: type `:heart:` to insert ❤️, or `:hea` for suggestions — disable with the `emojiCompletionEnabled` setting": "新增提示输入框的 emoji 短代码自动补全：输入 `:heart:` 插入 ❤️，输入 `:hea` 显示建议——用 `emojiCompletionEnabled` 设置禁用",
+    "Added warnings when transcript writes are failing (e.g. disk full) or when session saving is off due to an inherited environment variable, instead of losing transcripts silently": "新增转录写入失败（如磁盘已满）或会话保存因继承的环境变量而关闭时的警告，而不再静默丢失转录",
+    "Fixed a memory leak where truncated MCP tool outputs kept the full untruncated result in memory for the rest of the session": "修复被截断的 MCP 工具输出在会话余下时间里把完整未截断结果留在内存中的内存泄漏",
+    "Fixed Windows auto-update failures that could leave `claude.exe` missing; failed updates now restore the preserved executable automatically": "修复可能导致 `claude.exe` 丢失的 Windows 自动更新失败；失败的更新现在会自动还原预留的可执行文件",
+    "Fixed background session isolation not canonicalizing symlinked working directories, which could let sessions escape their workspace folder": "修复后台会话隔离未规范化符号链接工作目录、可能让会话逃出其工作区文件夹的问题",
+    "Fixed auto-compact never triggering for Claude Opus 4.8 on Bedrock and `/compact` failing once over the limit": "修复 Bedrock 上 Claude Opus 4.8 的自动压缩从不触发、以及超限后 `/compact` 失败的问题",
+    "Fixed corporate mTLS, TLS-verify, OAuth scope, and proxy settings being ignored in Claude Desktop sessions": "修复 Claude Desktop 会话中企业 mTLS、TLS 校验、OAuth scope 与代理设置被忽略的问题",
+    "Fixed screen reader mode's startup announcement being cut off by the first prompt render, and the thinking status row re-rendering every few seconds to update elapsed time and token counts": "修复屏幕阅读器模式的启动播报被首次提示符渲染打断、以及思考状态行每隔几秒重渲染以更新耗时与 token 计数的问题",
+    "Fixed managed settings that set `OTEL_EXPORTER_OTLP_ENDPOINT` not governing all signals — lower-scope signal-specific overrides no longer redirect telemetry away from the managed endpoint": "修复设置了 `OTEL_EXPORTER_OTLP_ENDPOINT` 的托管设置未能约束全部信号的问题——低作用域的按信号覆盖不再把遥测重定向到托管端点之外",
+    "Fixed `--resume`/`--continue` and `/resume` failing with a TypeError when a transcript has a malformed attachment entry": "修复转录含畸形附件条目时 `--resume`/`--continue` 与 `/resume` 报 TypeError 失败的问题",
+    "Fixed Remote Control sessions not showing a pending permission prompt or dialog to viewers that connected after it appeared": "修复 Remote Control 会话中，待处理的权限提示或对话框不向其出现后才连入的查看者显示的问题",
+    "Fixed background shells sometimes becoming impossible to stop after a session is sent to the background (`/background` or `←`) or when the session exits on a heavily loaded machine, most visible on Windows": "修复会话转入后台（`/background` 或 `←`）后或在高负载机器上会话退出时，后台 shell 有时无法停止的问题（Windows 上最明显）",
+    "Fixed a `CLAUDE.md` or `SKILL.md` paths frontmatter value with many brace groups OOM-killing or stalling the CLI at startup — brace expansion is now budget-bounded": "修复 `CLAUDE.md` 或 `SKILL.md` 的 paths frontmatter 值含大量花括号组时启动即 OOM 杀死或卡死 CLI 的问题——花括号展开现在有预算上限",
+    "Fixed the transcript preview sitting flush against the input area when attaching to a starting background session; it now leaves the same one-line gap as the live layout, so the transcript no longer shifts when the session takes over": "修复连接到正在启动的后台会话时转录预览紧贴输入区的问题；现在与实时布局一样留出一行间距，会话接管时转录不再位移",
+    "Improved footer PR badge links to be clickable hyperlinks even when terminal support can't be detected (e.g. over ssh/tmux); set `FORCE_HYPERLINK=0` to opt out": "改进页脚 PR 徽标链接：即使无法检测到终端支持（如经 ssh/tmux）也是可点击的超链接；设 `FORCE_HYPERLINK=0` 可退出",
+    "Changed the login-expiry warning to appear 3 days before expiry instead of 5": "调整登录过期警告为过期前 3 天出现，而非 5 天",
+    "Capped the frontend-design plugin suggestion tip at 3 lifetime impressions instead of repeating indefinitely": "把 frontend-design 插件建议提示限制为终身最多显示 3 次，不再无限重复",
+    "Added a cap on concurrently-running subagents (default 20, override with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`) so one message can't fan out unbounded background agents": "新增并发运行子代理的上限（默认 20，可用 `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` 覆盖），避免一条消息扇出无上限的后台代理",
+    "Changed subagents to no longer spawn nested subagents by default; set `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` to allow deeper nesting": "调整子代理默认不再派生嵌套子代理；设 `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` 可允许更深嵌套",
+    "Fixed `--max-budget-usd` not stopping background subagents: once the cap is reached, new spawns are denied and running background agents are halted": "修复 `--max-budget-usd` 不停止后台子代理的问题：达到上限后拒绝新派生并停止运行中的后台代理",
+    "Changed the Fable 5 usage-credits consent prompt to start with the decline option focused": "调整 Fable 5 用量积分同意提示初始焦点落在拒绝选项上"
   }
 }
