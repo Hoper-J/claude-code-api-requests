@@ -15,8 +15,8 @@
   "tools_count": 11,
   "is_quota_probe": false,
   "is_main_inference": true,
-  "captured_at": "2026-07-19",
-  "duration_seconds": 13,
+  "captured_at": "2026-07-25",
+  "duration_seconds": 11,
   "pruned": true,
   "error": "",
   "variants": [

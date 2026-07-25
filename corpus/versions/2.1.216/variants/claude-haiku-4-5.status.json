@@ -3,7 +3,7 @@
  "base_version": "2.1.216",
  "pinned_model": "claude-haiku-4-5",
  "is_default": false,
- "captured_at": "2026-07-21",
+ "captured_at": "2026-07-25",
  "model_in_request": "claude-haiku-4-5",
  "http_status": 200,
  "ja3": "<ja3#6>",
