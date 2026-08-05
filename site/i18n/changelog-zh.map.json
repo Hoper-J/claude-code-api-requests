@@ -3867,6 +3867,27 @@
     "Changed fast mode to report on the stream when usage credits run out mid-session, instead of failing silently": "调整快速模式：会话中途用量额度耗尽时在流上报告，而不是静默失败",
     "Changed Monitor: a watch that exits without producing any output now says so instead of reporting \"stream ended\"": "调整 Monitor：未产生任何输出就退出的监视现在会如实说明，而不是报告 \"stream ended\"",
     "Changed the Gateway `model` field validation: non-string values are rejected with a 400 instead of being forwarded": "调整 Gateway 的 `model` 字段校验：非字符串值以 400 拒绝，而不是继续转发",
-    "Removed the repeated \"Permission mode changed while the auto-mode classifier call was queued\" notice from approval prompts": "移除批准提示中反复出现的 \"Permission mode changed while the auto-mode classifier call was queued\" 提示"
+    "Removed the repeated \"Permission mode changed while the auto-mode classifier call was queued\" notice from approval prompts": "移除批准提示中反复出现的 \"Permission mode changed while the auto-mode classifier call was queued\" 提示",
+    "Fixed worktree-isolated sessions and their subagents being able to run destructive git commands against the main checkout; isolation now applies to file edits and Bash in every session type": "修复 worktree 隔离的会话及其子代理仍能对主检出执行破坏性 git 命令的问题；隔离现在对所有会话类型的文件编辑与 Bash 生效",
+    "Fixed PreToolUse auto-allow hooks bypassing tool restrictions in background agent tasks (summaries, compaction, renames)": "修复 PreToolUse 自动放行钩子在后台代理任务（摘要、压缩、重命名）中绕过工具限制的问题",
+    "Fixed `/usage-credits` on Team and Enterprise showing \"you've already sent a usage credit request\" for members whose earlier request was dismissed, blocking them from sending a new one": "修复 Team 与 Enterprise 上 `/usage-credits` 对先前请求已被驳回的成员显示 \"you've already sent a usage credit request\"、导致无法再次发送的问题",
+    "Fixed the startup connectivity check hanging and then failing behind an HTTPS proxy; it now uses the same proxy-aware transport as API requests and times out with a clear message": "修复启动连通性检查在 HTTPS 代理后挂起继而失败的问题；现在改用与 API 请求相同的代理感知传输，并在超时时给出明确提示",
+    "Fixed \"Connection closed mid-response\" errors being reported on responses that had actually completed": "修复实际已完成的响应被报告为 \"Connection closed mid-response\" 错误的问题",
+    "Fixed `/usage` overattributing usage to MCP servers: a server's share now reflects only the requests that actually consumed its tool results, instead of every turn after any call to it": "修复 `/usage` 高估 MCP 服务器用量的问题：服务器的占比现在只计入真正消费了其工具结果的请求，而不是调用过它之后的每一轮",
+    "Fixed sessions not linking to pull requests created after the branch was pushed, including through the GitHub REST API": "修复会话不关联分支推送之后（包括经 GitHub REST API）创建的拉取请求的问题",
+    "Fixed org-restricted `model: opus`-style subagent and teammate family aliases dropping to the parent model instead of stepping down to the newest org-allowed model in the family": "修复被组织限制的 `model: opus` 式子代理与 teammate 家族别名直接落到父模型、而不是降级到该家族中组织允许的最新模型的问题",
+    "Fixed stream idle timeout firing on custom `ANTHROPIC_BASE_URL` gateways despite server keep-alive pings arriving on the wire": "修复自定义 `ANTHROPIC_BASE_URL` 网关上服务端保活 ping 已在线路上到达、流空闲超时仍然触发的问题",
+    "Fixed claude.ai connectors being falsely marked as needing authorization when the session token is invalid — they now show a `/login` hint instead": "修复会话 token 无效时 claude.ai 连接器被误标为需要授权的问题——现在会改为显示 `/login` 提示",
+    "Fixed tool errors not being displayed for tools no longer available locally, for example after an MCP server is removed": "修复本地已不可用的工具（例如移除某个 MCP 服务器之后）不显示工具错误的问题",
+    "Fixed `SendMessage` rejecting a long summary — it now truncates instead, so sends no longer fail on a character limit": "修复 `SendMessage` 拒绝过长摘要的问题——现在会截断，发送不再因字符上限而失败",
+    "Fixed the spinner's effort label in a subagent's transcript view showing the session's effort level instead of the subagent's own `effort:` setting": "修复子代理转录视图中 spinner 的强度标签显示会话强度、而非子代理自身 `effort:` 设置的问题",
+    "Fixed rare crashes when a file watcher hit a filesystem error or during file-watcher teardown": "修复文件监视器遇到文件系统错误或在拆除过程中的罕见崩溃",
+    "Fixed screen readers re-reading the whole input line on every backspace in `--ax-screen-reader` mode — end-of-line deletions now echo just the deleted characters": "修复 `--ax-screen-reader` 模式下屏幕阅读器每次退格都重读整行输入的问题——行尾删除现在只回显被删除的字符",
+    "Fixed host model-selection keys not taking precedence over a stale on-disk `managed-settings.json` when `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST` is set": "修复设置 `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST` 时，宿主的模型选择键未能优先于磁盘上过期 `managed-settings.json` 的问题",
+    "Improved auto mode safety: messages sent to other agent sessions via `SendMessage` are now evaluated by the permission classifier before dispatch": "改进自动模式安全性：经 `SendMessage` 发往其他代理会话的消息现在会先经权限分类器评估再派发",
+    "Improved the refusal when Claude tries to invoke a skill with `disable-model-invocation`: Claude is now told to ask you to run the skill instead of replicating its workflow": "改进 Claude 试图调用带 `disable-model-invocation` 的 skill 时的拒绝方式：现在会告知 Claude 请你来运行该 skill，而不是复刻其工作流程",
+    "Improved the `/diff` view, the Remote Control workspace diff, and file-edit diffs in Claude Code on the web sessions to use raw git blob content, ignoring workspace-configured diff drivers and textconv": "改进 `/diff` 视图、Remote Control 工作区 diff 以及 Claude Code on the web 会话中的文件编辑 diff：改用原始 git blob 内容，忽略工作区配置的 diff driver 与 textconv",
+    "Changed Remote Control auto-start so repo-local settings (`.claude/settings.json` or `.claude/settings.local.json`) can no longer turn it on (they can still turn it off); enable it at user scope via `/config`": "调整 Remote Control 自动启动：仓库级设置（`.claude/settings.json` 或 `.claude/settings.local.json`）不再能开启它（仍可关闭）；请在用户级经 `/config` 启用",
+    "Removed ultraplan feature": "移除 ultraplan 功能"
   }
 }
