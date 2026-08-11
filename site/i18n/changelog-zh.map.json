@@ -3952,6 +3952,11 @@
     "Changed `CLAUDE_CODE_DISABLE_1M_CONTEXT` to hold every Claude model with a native 1M window to 200K via auto-compaction, not just a fixed list; a startup warning now appears when auto-compaction isn't holding the session to 200K": "调整 `CLAUDE_CODE_DISABLE_1M_CONTEXT`：经自动压缩把所有原生 1M 窗口的 Claude 模型都压在 200K，而非只针对固定清单；自动压缩没能把会话压在 200K 时现在会有启动警告",
     "Changed auto-compact to keep sessions on unrecognized model IDs within the assumed context window instead of letting them grow past it; set `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT=1` to restore the previous behavior": "调整自动压缩：无法识别的模型 ID 上的会话保持在假定上下文窗口内，而不是任其超出；设 `CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT=1` 恢复旧行为",
     "Changed `/review` to be an alias of `/code-review`, which reviews the current diff or a PR (`/code-review <level> <pr#>`); use `/code-review ultra` for a deep cloud review": "调整 `/review` 为 `/code-review` 的别名，后者审查当前 diff 或某个 PR（`/code-review <level> <pr#>`）；深度云端审查用 `/code-review ultra`",
-    "Changed `/code-review` with no effort level to reuse the level you typed last; type a level like `/code-review high` to change it": "调整不带强度级别的 `/code-review`：复用你上次键入的级别；键入如 `/code-review high` 即可更改"
+    "Changed `/code-review` with no effort level to reuse the level you typed last; type a level like `/code-review high` to change it": "调整不带强度级别的 `/code-review`：复用你上次键入的级别；键入如 `/code-review high` 即可更改",
+    "Fixed feature flags being evaluated without the user's subscription tier when a session started with an expired login token, which could wrongly prompt Max plan users to enable usage credits for Fable": "修复以过期登录 token 启动的会话在求值功能开关时不带用户订阅层级的问题——这可能错误地提示 Max 套餐用户为 Fable 启用用量额度",
+    "Fixed every Bash command failing under `claude-code-action` with `allowed_non_write_users` on GitHub-hosted runners": "修复 GitHub 托管 runner 上 `claude-code-action` 配 `allowed_non_write_users` 时所有 Bash 命令都失败的问题",
+    "Fixed `/tui` bringing back a conversation that had been rewound to before its first message": "修复 `/tui` 把已回退到首条消息之前的对话又带回来的问题",
+    "Improved slash-command menu: blue now marks only the selected row, matched characters are bolded instead of recolored, and emoji or accented names keep their glyphs": "改进斜杠命令菜单：蓝色现在只标记选中行，匹配字符改为加粗而非变色，emoji 与带重音的名称保留其字形",
+    "Improved performance: fewer event-loop stalls on file-not-found suggestions and at-mention size checks": "改进性能：减少文件未找到建议与 @ 提及大小检查时的事件循环停顿"
   }
 }
