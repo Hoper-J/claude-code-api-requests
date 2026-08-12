@@ -87,7 +87,12 @@ fi
 say "new version(s) on npm: $MISSING — capturing"
 
 # ---- capture missing versions (engine skips existing; capture.sh auto-sanitizes) ----
-if ! bash "$HERE/capture.sh" --refresh-versions --skip-preflight >>"$LOG" 2>&1; then
+# Pin the install registry to npmjs: since 2.1.214 the CLI's native binary ships as a
+# platform optionalDependency, and a mirror that hasn't synced it yet makes npm
+# "succeed" with just the bootstrap shell — the engine then fails with "no runnable
+# binary" (first bit us on 2.1.227, 2026-08-11).
+if ! bash "$HERE/capture.sh" --refresh-versions --skip-preflight \
+    --registry https://registry.npmjs.org >>"$LOG" 2>&1; then
   say "capture FAILED for: $MISSING — see $LOG"
   exit 1
 fi
