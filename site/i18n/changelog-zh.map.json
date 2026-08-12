@@ -3957,6 +3957,24 @@
     "Fixed every Bash command failing under `claude-code-action` with `allowed_non_write_users` on GitHub-hosted runners": "修复 GitHub 托管 runner 上 `claude-code-action` 配 `allowed_non_write_users` 时所有 Bash 命令都失败的问题",
     "Fixed `/tui` bringing back a conversation that had been rewound to before its first message": "修复 `/tui` 把已回退到首条消息之前的对话又带回来的问题",
     "Improved slash-command menu: blue now marks only the selected row, matched characters are bolded instead of recolored, and emoji or accented names keep their glyphs": "改进斜杠命令菜单：蓝色现在只标记选中行，匹配字符改为加粗而非变色，emoji 与带重音的名称保留其字形",
-    "Improved performance: fewer event-loop stalls on file-not-found suggestions and at-mention size checks": "改进性能：减少文件未找到建议与 @ 提及大小检查时的事件循环停顿"
+    "Improved performance: fewer event-loop stalls on file-not-found suggestions and at-mention size checks": "改进性能：减少文件未找到建议与 @ 提及大小检查时的事件循环停顿",
+    "Fixed interactive sessions that could stop redrawing entirely, while the process kept running, after a rare internal layout error": "修复罕见内部布局错误后交互会话完全停止重绘（进程仍在运行）的问题",
+    "Fixed `git` / Git Bash not being found on Windows when Claude Code is launched from a parent folder of the git installation": "修复 Windows 上从 git 安装目录的父文件夹启动 Claude Code 时找不到 `git` / Git Bash 的问题",
+    "Fixed `/tui` reverting the session to an earlier model when `/model` had been changed since the last response": "修复上次回复后已用 `/model` 换过模型时，`/tui` 把会话退回旧模型的问题",
+    "Fixed cross-session messaging sometimes starting without an inbox in the first session after install or upgrade": "修复安装或升级后的首个会话里，跨会话消息有时在没有收件箱的情况下启动的问题",
+    "Fixed Remote Control `/resume` while connected leaking the resumed conversation's title or history into the connected session": "修复连接期间执行 Remote Control `/resume` 会把被恢复对话的标题或历史泄漏进已连接会话的问题",
+    "Fixed `claude self-hosted-runner` sessions failing on every fresh runner when the `checkout` hook fails for a repository the session doesn't push to; that repository is now skipped with a warning": "修复某仓库的 `checkout` 钩子失败时（该会话并不向其推送），`claude self-hosted-runner` 会话在每个新 runner 上都失败的问题；现在会跳过该仓库并给出警告",
+    "Fixed self-hosted runners ending sessions in the gap between a background task finishing and the follow-up turn starting": "修复自托管 runner 在后台任务结束与后续轮次开始的间隙终止会话的问题",
+    "Fixed session cleanup deleting contents inside a project's memory folder": "修复会话清理会删除项目 memory 文件夹内容的问题",
+    "Fixed background plugin-cache cleanup deleting a plugin's cache when its only version is a symlinked development checkout": "修复插件唯一版本是符号链接的开发检出时，后台插件缓存清理会删除其缓存的问题",
+    "Fixed a settings-merge issue where a marketplace entry redefined in a higher-precedence settings tier could inherit another tier's custom headers; marketplace entries now merge as whole entries": "修复设置合并问题：在更高优先级设置层重新定义的市场条目可能继承另一层的自定义标头；市场条目现在按整条合并",
+    "Fixed the deferred-tools reminder occasionally being sent to the model twice after a skill invocation": "修复 skill 调用后延迟工具提醒偶尔向模型发送两次的问题",
+    "Hardened skills synced from claude.ai: they no longer shadow local commands or MCP prompts, their descriptions are sanitized and labeled, and on your machine their bodies don't run `!` commands or expand `@` files": "加固从 claude.ai 同步的 skill：不再遮蔽本地命令或 MCP 提示词，其描述会被净化并加标记，且在你的机器上其正文不执行 `!` 命令、不展开 `@` 文件",
+    "Improved cross-session messages: the sender and body now display inline instead of a collapsed line, and messages to Remote Control sessions on other machines show your Remote Control session name as the sender": "改进跨会话消息：发送者与正文现在内联显示而非折叠成一行，发往其他机器 Remote Control 会话的消息会以你的 Remote Control 会话名作为发送者显示",
+    "Improved Vertex AI credential handling: expired or missing Google Cloud credentials now fail within seconds instead of retrying for minutes": "改进 Vertex AI 凭据处理：过期或缺失的 Google Cloud 凭据现在数秒内即失败，而不是重试数分钟",
+    "Improved compaction progress: the retry countdown and stall hint now appear during compaction instead of only a progress bar": "改进压缩进度：重试倒计时与停滞提示现在在压缩期间显示，而不是只有进度条",
+    "Updated terminal title busy-spinner glyphs to reduce tab-bar jitter on some terminals": "更新终端标题忙碌旋转符字形，减少部分终端标签栏抖动",
+    "Changed the Write tool so newer models can overwrite an existing file they haven't read this session, matching the Edit tool's rules; older models still require the read first": "调整 Write 工具：较新的模型可以覆盖本会话未读过的已有文件，与 Edit 工具规则一致；较旧的模型仍需先读",
+    "Removed the outdated note about auto mode sessions costing slightly more from the first-use notice for Pro, Max, and Team plans": "从 Pro、Max 与 Team 套餐的首次使用通知中移除关于自动模式会话花费略高的过时说明"
   }
 }
