@@ -1,0 +1,27 @@
+{
+  "version": "2.1.229",
+  "result": "ok",
+  "phase": "done",
+  "regime": "native",
+  "claude_bin": "~/claude-code-api-requests/corpus/versions/2.1.229/claude-wrapper.sh",
+  "install_ok": true,
+  "install_seconds": 475,
+  "capture_exit": 0,
+  "http_status": 200,
+  "ja3": "<ja3#8>",
+  "ja4": "<ja4#8>",
+  "model_in_request": "claude-opus-5",
+  "system_blocks": 4,
+  "tools_count": 12,
+  "is_quota_probe": false,
+  "is_main_inference": true,
+  "captured_at": "2026-08-13",
+  "duration_seconds": 490,
+  "pruned": true,
+  "error": "",
+  "variants": [
+    "claude-fable-5-1m",
+    "claude-haiku-4-5",
+    "claude-sonnet-5"
+  ]
+}
