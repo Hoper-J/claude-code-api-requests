@@ -4007,6 +4007,7 @@
     "Changed self-hosted runner Windows startup to require an explicit `--base-dir`; there is no default checkout directory on Windows": "调整自托管 runner 的 Windows 启动：要求显式 `--base-dir`；Windows 上没有默认检出目录",
     "[VSCode] \"Report a problem\" and `/bug` now open the built-in feedback dialog instead of a retired survey link": "[VSCode] \"Report a problem\" 与 `/bug` 现在打开内置反馈对话框，而不是已停用的问卷链接",
     "[VSCode] Made the `/btw` side-question panel resizable by dragging its boundary, in both side-docked and stacked layouts": "[VSCode] `/btw` 侧边提问面板现在可拖动边界调整大小，侧停靠与堆叠布局皆可",
-    "[VSCode] Added session groups in the sidebar — right-click to create, rename, or delete; Cmd/Ctrl- or Shift-click to move several sessions at once": "[VSCode] 侧栏新增会话分组——右键创建、重命名或删除；Cmd/Ctrl 或 Shift 点击可一次移动多个会话"
+    "[VSCode] Added session groups in the sidebar — right-click to create, rename, or delete; Cmd/Ctrl- or Shift-click to move several sessions at once": "[VSCode] 侧栏新增会话分组——右键创建、重命名或删除；Cmd/Ctrl 或 Shift 点击可一次移动多个会话",
+    "Fixed MCP OAuth sign-in failing with a redirect URI mismatch for servers that use a pre-registered OAuth client, such as Slack": "修复使用预注册 OAuth 客户端的服务器（如 Slack）在 MCP OAuth 登录时报重定向 URI 不匹配的问题"
   }
 }
