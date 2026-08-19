@@ -4128,6 +4128,25 @@
     "Dimmed the elapsed-time counter on the running tool header so it no longer competes with the bold counts": "运行中工具标头的耗时计数改为暗色，不再与加粗计数抢眼",
     "Background task notifications delivered between turns are now sent to the model inside `<system-reminder>` tags, matching mid-turn delivery": "轮次之间送达的后台任务通知现在包在 `<system-reminder>` 标签里发给模型，与轮次中途的送达一致",
     "Mantle: skip the admin-pin availability probe at startup when a main-loop model is already picked": "Mantle：主循环模型已选定时，启动阶段跳过管理员 pin 可用性探测",
-    "Windows: startup no longer stalls on repeated rename retries when `~/.claude.json` is read-only": "Windows：`~/.claude.json` 只读时启动不再因反复重试重命名而卡住"
+    "Windows: startup no longer stalls on repeated rename retries when `~/.claude.json` is read-only": "Windows：`~/.claude.json` 只读时启动不再因反复重试重命名而卡住",
+    "Added an optional `spellcheck` setting that underlines misspelled words in the prompt input as you type, using your installed `aspell`, `hunspell`, or `ispell`": "新增可选的 `spellcheck` 设置：输入提示词时用你已安装的 `aspell`、`hunspell` 或 `ispell` 给拼错的词加下划线",
+    "Fixed whole-prompt-cache invalidation when a language server disconnected or reconnected mid-session": "修复语言服务器在会话中途断开或重连时整个提示词缓存被作废的问题",
+    "Fixed nested markdown list items misaligning at depth 3+ and added a hanging indent to wrapped list items in the terminal UI": "修复嵌套 markdown 列表项在第 3 层及更深错位的问题，并为终端 UI 中换行的列表项加悬挂缩进",
+    "Fixed prompt input highlights (slash commands, keywords, mentions) appearing shifted by one or more characters in some multi-line prompts": "修复部分多行提示词中输入高亮（斜杠命令、关键词、提及）偏移一个或多个字符的问题",
+    "Fixed Shift+Tab inside the permission prompt's comment field approving the edit and granting session-wide edit permission instead of closing the field": "修复权限提示的备注栏里按 Shift+Tab 会批准该编辑并授予会话级编辑权限、而不是关闭备注栏的问题",
+    "Fixed the Agent tool advertising a general-purpose default in sessions where that agent is unavailable: an omitted `subagent_type` there now gets a clear error listing the available agents": "修复 Agent 工具在 general-purpose 代理不可用的会话里仍宣传其为默认的问题：此时省略 `subagent_type` 现在会得到列出可用代理的明确报错",
+    "Fixed notebook cell delete/replace approval dialogs silently omitting the existing cell content when the notebook or cell could not be read; the dialog now says why": "修复笔记本或单元格读不出来时，单元格删除/替换批准对话框静默省略现有内容的问题；对话框现在会说明原因",
+    "Fixed slash commands run while Claude is responding showing HTML entities instead of the actual characters": "修复 Claude 回复期间运行的斜杠命令显示 HTML 实体而非实际字符的问题",
+    "Fixed the prompt footer not showing the \"Update installed\" restart notice after a background auto-update": "修复后台自动更新后提示符页脚不显示 \"Update installed\" 重启提醒的问题",
+    "Fixed the expanded task list (`ctrl+t`) always starting collapsed when resuming or relaunching into a session that still has open tasks": "修复恢复或重启进仍有未完成任务的会话时，展开的任务列表（`ctrl+t`）总是从折叠状态开始的问题",
+    "Improved memory and CPU usage while cloud sessions such as `/ultrareview` or `/autofix-pr` run in the background — their event streams are no longer re-scanned and re-rendered on every update": "改进 `/ultrareview`、`/autofix-pr` 等云会话在后台运行时的内存与 CPU 占用——其事件流不再在每次更新时重扫重渲染",
+    "Improved permission dialogs: display text and \"don't ask again\" options now always match what a grant would cover, and \"don't ask again\" is withheld when contents cannot be fully displayed": "改进权限对话框：显示文本与 \"don't ask again\" 选项现在始终与授权实际覆盖的范围一致，内容无法完整显示时不提供 \"don't ask again\"",
+    "Improved the embedded `grep` in native macOS/Linux builds: pathological patterns now fail fast instead of exhausting memory, and `-m N` with `-A/-C` prints correct context": "改进 macOS/Linux 原生构建内嵌的 `grep`：病态模式现在快速失败而不是耗尽内存，`-m N` 配 `-A/-C` 打印正确上下文",
+    "Improved the context-limit error to say when auto-compact is off and point to `/config` to re-enable it": "改进上下文上限报错：自动压缩关闭时会说明，并指引到 `/config` 重新启用",
+    "Vim mode: NORMAL mode and cursor position are now preserved when toggling the detailed transcript (ctrl+o) or closing a panel": "Vim 模式：切换详细转录（ctrl+o）或关闭面板时现在保留 NORMAL 模式与光标位置",
+    "Dialogs: arrow keys and Enter pressed in quick succession now select the option you navigated to instead of the previously highlighted one": "对话框：快速连按方向键和 Enter 现在选中你导航到的选项，而不是之前高亮的那个",
+    "`SendMessage` now refuses messages too large for cross-session delivery up front instead of silently dropping them": "`SendMessage` 现在预先拒绝对跨会话投递来说过大的消息，而不是静默丢弃",
+    "Remote Control: `claude rc` now applies the same enterprise-gateway availability check as interactive startup": "Remote Control：`claude rc` 现在应用与交互式启动相同的企业网关可用性检查",
+    "[VSCode] Fixed focus jumping between open Claude tabs on its own when a window with several Claude panels is restored or reloaded": "[VSCode] 修复恢复或重载带多个 Claude 面板的窗口时，焦点在打开的 Claude 标签页之间自行跳动的问题"
   }
 }
