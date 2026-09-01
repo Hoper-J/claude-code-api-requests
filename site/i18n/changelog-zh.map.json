@@ -4554,6 +4554,10 @@
     "Changed `/loop`: self-paced dynamic mode and the no-prompt autonomous default are now always available, including on Bedrock/Vertex/Foundry": "调整 `/loop`：自节奏动态模式与无提示词自治默认现在始终可用，包括 Bedrock/Vertex/Foundry",
     "Changed Anthropic telemetry export failures to log at debug level as `[Anthropic telemetry]` instead of `[3P telemetry] OTEL diag error`, so they are not mistaken for your OTel collector failing": "调整 Anthropic 遥测导出失败以 debug 级别记为 `[Anthropic telemetry]`，不再是 `[3P telemetry] OTEL diag error`，避免被误认为你的 OTel collector 故障",
     "Changed cross-session messaging in Linux user namespaces: root-equivalent trust for unmapped owners is limited to canonical system directories": "调整 Linux user namespace 中的跨会话消息：未映射所有者的等价 root 信任限于规范系统目录",
-    "Changed `SendMessage` from a subagent to another session: the result now notes that any reply is delivered to the parent session's conversation, not to the subagent": "调整子代理向另一会话的 `SendMessage`：结果现在注明任何回复都送达父会话的对话，而不是子代理"
+    "Changed `SendMessage` from a subagent to another session: the result now notes that any reply is delivered to the parent session's conversation, not to the subagent": "调整子代理向另一会话的 `SendMessage`：结果现在注明任何回复都送达父会话的对话，而不是子代理",
+    "Fixed Bash commands failing with \"task output swap refused (tasks dir moved or linked)\" on some Macs": "修复部分 Mac 上 Bash 命令以 \"task output swap refused (tasks dir moved or linked)\" 失败的问题",
+    "Fixed \"always allow\" not saving in a project that has no .claude/settings.local.json yet": "修复尚无 .claude/settings.local.json 的项目里 \"always allow\" 保存不上的问题",
+    "Fixed Remote Control sessions hosted by Claude Desktop or VS Code stalling for minutes after a tool finished when the connection to claude.ai was degraded": "修复与 claude.ai 的连接劣化时，Claude Desktop 或 VS Code 托管的 Remote Control 会话在工具完成后停顿数分钟的问题",
+    "Fixed background task notifications with very large failure output (for example git errors on a full disk) making the conversation exceed the API request size limit": "修复带超大失败输出的后台任务通知（例如磁盘写满时的 git 错误）让对话超出 API 请求大小上限的问题"
   }
 }
