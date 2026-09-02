@@ -374,7 +374,7 @@ const INDEX = [...versions].sort((a, b) => cmpV(b, a)).map(v => {
 const FAMILIES = {
   sonnet: { variants: ["claude-sonnet-5", "claude-sonnet-4-5"], canonical: /^claude-sonnet/ },
   haiku:  { variants: ["claude-haiku-4-5"], canonical: /^claude-haiku/ },
-  fable:  { variants: ["claude-fable-5-1m"], canonical: /^claude-fable/ },
+  fable:  { variants: ["claude-fable-5-1", "claude-fable-5-1m"], canonical: /^claude-fable/ },
 };
 const shortM = m => String(m || "").replace(/^claude-/, "").replace(/-\d{8}$/, "");
 const LENSES = {};
