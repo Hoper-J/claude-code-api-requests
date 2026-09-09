@@ -119,10 +119,10 @@ function cleanHeaders(hsrc) {
 /* ---------- message shape ---------- */
 function blockKinds(text) {
   const k = []; const has = re => re.test(text);
-  if (has(/# claudeMd/)) k.push("claude-md");
+  if (has(/# claudeMd|Codebase and user instructions are shown below|Contents of \S+CLAUDE\.md/)) k.push("claude-md");
   if (has(/auto-memory|MEMORY\.md/)) k.push("auto-memory");
   if (has(/# userEmail/)) k.push("user-email");
-  if (has(/# currentDate/)) k.push("current-date");
+  if (has(/# currentDate|Today's date is/)) k.push("current-date");
   if (has(/# gitStatus|This is the git status/)) k.push("git-status");
   if (has(/# directoryStructure/)) k.push("directory-structure");
   if (has(/SessionStart|Session note:/)) k.push("session-start-hook");
@@ -130,6 +130,8 @@ function blockKinds(text) {
   if (has(/deferred tools|available-deferred-tools|via ToolSearch/i)) k.push("deferred-tools");
   if (has(/important-instruction-reminders/)) k.push("instruction-reminders");
   if (has(/ultracode|ultrareview/i)) k.push("ultracode-status");
+  if (has(/Attribution for git commits/)) k.push("attribution");
+  if (has(/You have been invoked in the following environment/)) k.push("environment");
   return k;
 }
 function classifyProbe(text) {
@@ -137,17 +139,46 @@ function classifyProbe(text) {
   if (/\bWarmup\b/i.test(text)) return "warmup";
   return "other";
 }
-function messageShape(msgs) {
+/* Block-grade signatures for the cached system prompt. blockKinds() is deliberately loose for
+   message blocks, but the system prompt mentions MEMORY.md, skills and ultrareview in prose,
+   and prose is not a location — only the injected block itself is (e.g. the runtime
+   Environment block, which lived in the system prompt until 2.1.266). */
+function systemBlockKinds(text) {
+  const k = []; const has = re => re.test(text);
+  if (has(/Contents of \S+CLAUDE\.md/)) k.push("claude-md");
+  if (has(/Contents of \S+MEMORY\.md/)) k.push("auto-memory");
+  if (has(/# userEmail/)) k.push("user-email");
+  if (has(/Today's date is/)) k.push("current-date");
+  if (has(/This is the git status/)) k.push("git-status");
+  if (has(/<session-start-hook>|SessionStart:\w+ hook/)) k.push("session-start-hook");
+  if (has(/<available-skills>|following skills are available/i)) k.push("available-skills");
+  if (has(/<available-deferred-tools>|The following deferred tools/)) k.push("deferred-tools");
+  if (has(/# important-instruction-reminders/)) k.push("instruction-reminders");
+  if (has(/Attribution for git commits/)) k.push("attribution");
+  if (has(/You have been invoked in the following environment/)) k.push("environment");
+  return k;
+}
+function messageShape(msgs, system) {
   const blocks = []; const allKinds = new Set(); let probe = null, cacheBreaks = 0;
-  msgs.forEach(m => (m.content || []).forEach(c => {
+  /* Where each reminder kind first appears (`role@messageIndex`): a kind that survives
+     a version but moves — e.g. the date leaving the first user turn for the mid-turn
+     Environment block in 2.1.266 — is a change in its own right, not a no-op. */
+  const kindLocations = {}; let reminderBlocks = 0;
+  msgs.forEach((m, mi) => (m.content || []).forEach(c => {
     const text = c.text || "";
     const wrapped = /<system-reminder>/.test(text);
-    const kinds = blockKinds(text); kinds.forEach(k => allKinds.add(k));
+    // Count reminders, not content blocks: the sonnet axis concatenates several complete
+    // <system-reminder>…</system-reminder> pairs into one mid-turn content block (2.1.203+).
+    reminderBlocks += (text.match(/<system-reminder>/g) || []).length;
+    const kinds = blockKinds(text); kinds.forEach(k => { allKinds.add(k); if (!(k in kindLocations)) kindLocations[k] = `${m.role}@${mi}`; });
     if (kinds.length === 0 && !wrapped) { const p = classifyProbe(text); if (p && !probe) probe = p; }
     if (c.cache) cacheBreaks++;
     blocks.push({ role: m.role, wrapper: wrapped ? "system-reminder" : null, kinds, cache: c.cache || null });
   }));
-  return { message_count: msgs.length, block_count: blocks.length, blocks, reminder_kinds: [...allKinds], probe: probe || "none", cache_breaks: cacheBreaks };
+  /* The cached system prompt is a location too (`system[]`), for kinds no message carries —
+     matched with block-grade signatures only (see systemBlockKinds). */
+  (system || []).forEach(b => systemBlockKinds(b.text || "").forEach(k => { if (!(k in kindLocations)) kindLocations[k] = "system[]"; }));
+  return { message_count: msgs.length, block_count: blocks.length, blocks, reminder_kinds: [...allKinds], kind_locations: kindLocations, reminder_blocks: reminderBlocks, probe: probe || "none", cache_breaks: cacheBreaks };
 }
 function injectedBodyOf(msgs) {
   const parts = [];
@@ -217,7 +248,12 @@ function parseCapture(j, regime) {
       return { text: sanitize(c.text != null ? c.text : JSON.stringify(c)), cache: cc };
     }),
   }));
-  const shape = messageShape(msgs);
+  const shape = messageShape(msgs, sysArr.map(t => ({ text: t })));
+  // Level-1 markdown headings of the system prompt (`# …`, the same section grammar as the
+  // site's compare view) — a section appearing or vanishing (e.g. "# Reporting outcomes"
+  // dropped in 2.1.257) is named, not just counted in chars. Build-time only: consumed by
+  // computeDelta, then stripped like the other `_` fields.
+  const _system_sections = [...new Set(sysArr.join("\n").split("\n").filter(l => /^# \S/.test(l)).map(l => l.trim()))];
   // MCP async-connect race (2.1.153+): when the server hadn't finished connecting
   // at first-request build, mcp__* is replaced by a "still connecting" notice. This
   // is a capture-time state, not a version property — flag it so the UI can mark it.
@@ -228,7 +264,7 @@ function parseCapture(j, regime) {
   const rep = parseReply(j.response);
   return {
     result: "ok", model: body.model, http_status: (j.response && j.response.status) || null, regime, aux: false,
-    system_chars, tools_count: toolIds.length, blocks, tools: toolIds, headers, betas,
+    system_chars, _system_sections, tools_count: toolIds.length, blocks, tools: toolIds, headers, betas,
     body_keys: Object.keys(body).sort(),
     max_tokens: body.max_tokens != null ? body.max_tokens : null,
     temperature: body.temperature != null ? body.temperature : null,
@@ -281,7 +317,7 @@ for (const v of versions) {
       CAP_DAY = (String(vstatus.captured_at || status.captured_at || "").match(/^20\d\d-\d\d-\d\d/) || [null])[0];
       const det = parseCapture(vfull, status.regime || "js");
       det.captured_at = CAP_DAY;
-      /* _toolNames/_injectedBody stay until the lens chains are computed; the
+      /* _toolNames/_injectedBody/_system_sections stay until the lens chains are computed; the
          cleanup loop below the INDEX strips them from variants too. */
       const ax = vstatus.model_axis_diff || {};
       rec.variants.push({
@@ -330,9 +366,17 @@ function computeDelta(prevMain, cur) {
     const ba = cur.betas.filter(x => !pB.has(x)); if (ba.length) d.betas_added = ba;
     const br = prevMain.betas.filter(x => !cB.has(x)); if (br.length) d.betas_removed = br;
     const pR = new Set(prevMain.msg_shape.reminder_kinds), cR = new Set(cur.msg_shape.reminder_kinds);
-    const ra = cur.msg_shape.reminder_kinds.filter(x => !pR.has(x)); if (ra.length) d.reminders_added = ra;
-    const rr = prevMain.msg_shape.reminder_kinds.filter(x => !cR.has(x)); if (rr.length) d.reminders_removed = rr;
-    if (!ra.length && !rr.length && prevMain._injectedBody !== cur._injectedBody) d.context_body_changed = true;
+    const pL = prevMain.msg_shape.kind_locations || {}, cL = cur.msg_shape.kind_locations || {};
+    // A kind that merely relocated (e.g. the Environment block crossing from the cached system
+    // prompt into a per-turn message) is reported once, as a move — not also as added/removed.
+    const mv = Object.keys(cL).filter(x => pL[x] && pL[x] !== cL[x]).map(x => ({ kind: x, from: pL[x], to: cL[x] }));
+    const moved = new Set(mv.map(m => m.kind));
+    const ra = cur.msg_shape.reminder_kinds.filter(x => !pR.has(x) && !moved.has(x)); if (ra.length) d.reminders_added = ra;
+    const rr = prevMain.msg_shape.reminder_kinds.filter(x => !cR.has(x) && !moved.has(x)); if (rr.length) d.reminders_removed = rr;
+    if (mv.length) d.reminders_moved = mv;
+    const pRB = prevMain.msg_shape.reminder_blocks, cRB = cur.msg_shape.reminder_blocks;
+    if (pRB != null && cRB != null && pRB !== cRB) d.reminder_blocks_changed = { from: pRB, to: cRB };
+    if (!ra.length && !rr.length && !mv.length && prevMain._injectedBody !== cur._injectedBody) d.context_body_changed = true;
     if (prevMain.msg_shape.probe !== cur.msg_shape.probe) d.probe_changed = { from: prevMain.msg_shape.probe, to: cur.msg_shape.probe };
     if ((prevMain.effort || null) !== (cur.effort || null)) d.effort_changed = { from: prevMain.effort || null, to: cur.effort || null };
     if (j(prevMain.thinking) !== j(cur.thinking)) d.thinking_changed = { from: prevMain.thinking ? prevMain.thinking.type : null, to: cur.thinking ? cur.thinking.type : null };
@@ -342,6 +386,9 @@ function computeDelta(prevMain, cur) {
     if (j(prevMain.context_management) !== j(cur.context_management)) d.context_management_changed = { from: prevMain.context_management, to: cur.context_management };
     if (j(prevMain.diagnostics) !== j(cur.diagnostics)) d.diagnostics_changed = { from: prevMain.diagnostics, to: cur.diagnostics };
     const scd = cur.system_chars - prevMain.system_chars; if (scd) d.system_chars_delta = scd;
+    const pS = new Set(prevMain._system_sections || []), cS = new Set(cur._system_sections || []);
+    const sa = (cur._system_sections || []).filter(x => !pS.has(x)); if (sa.length) d.system_sections_added = sa;
+    const sr = (prevMain._system_sections || []).filter(x => !cS.has(x)); if (sr.length) d.system_sections_removed = sr;
     if (prevMain.blocks.length !== cur.blocks.length) d.system_blocks_changed = { from: prevMain.blocks.length, to: cur.blocks.length };
     const pBK = new Set(prevMain.body_keys || []), cBK = new Set(cur.body_keys || []);
     const bka = (cur.body_keys || []).filter(x => !pBK.has(x) && !KNOWN_BODY_KEYS.has(x)); if (bka.length) d.body_keys_added = bka;
@@ -409,7 +456,7 @@ for (const [fam, def] of Object.entries(FAMILIES)) {
   LENSES[fam] = chain;
 }
 
-for (const v of versions) { const r = parsed[v]; if (r) { delete r._toolNames; delete r._injectedBody; (r.variants || []).forEach(x => { delete x.detail._toolNames; delete x.detail._injectedBody; }); } }
+for (const v of versions) { const r = parsed[v]; if (r) { delete r._toolNames; delete r._injectedBody; delete r._system_sections; (r.variants || []).forEach(x => { delete x.detail._toolNames; delete x.detail._injectedBody; delete x.detail._system_sections; }); } }
 const mains = versions.filter(v => parsed[v] && !parsed[v].aux).length;
 const COUNTS = { total: versions.length, ok: mains, aux: AUX.size, fail: failSet.size };
 

@@ -262,13 +262,13 @@ function DiffLine({ kind="context", oldNo=null, newNo=null, showNumbers=false, s
 }
 
 /* ---- DeltaSummary ---- */
-const DELTA_EN = { tool:"tool", tools:"tools", modified:"modified", chars:"chars", beta:"beta", betas:"betas", maxTokens:"max_tokens", modelChanged:"model changed", noChange:"No payload change", first:"First captured version", context:"context", systemBlocks:"system blocks", reminderNames:{} };
+const DELTA_EN = { tool:"tool", tools:"tools", modified:"modified", chars:"chars", beta:"beta", betas:"betas", maxTokens:"max_tokens", modelChanged:"model changed", noChange:"No payload change", first:"First captured version", context:"context", systemBlocks:"system blocks", reminderBlocks:"context blocks", section:"section", sections:"sections", reminderNames:{} };
 function DeltaSummary({ delta, labels=DELTA_EN, tone="inline", style }) {
   const L={ ...DELTA_EN, ...labels };
   if (!delta) return <span style={{ color:"var(--text-faint)", fontFamily:"var(--font-ui)", fontSize:"var(--t-sm)" }}>{L.first}</span>;
   const added=(delta.tools_added||[]).length, removed=(delta.tools_removed||[]).length, modified=(delta.tools_modified||[]).length;
   const betaAdd=(delta.betas_added||[]).length, betaRem=(delta.betas_removed||[]).length;
-  const remAdd=delta.reminders_added||[], remRem=delta.reminders_removed||[];
+  const remAdd=delta.reminders_added||[], remRem=delta.reminders_removed||[], remMov=delta.reminders_moved||[];
   const rn=(k)=>(L.reminderNames&&L.reminderNames[k])||k;
   const chars=delta.system_chars_delta||0, model=delta.model_changed||null, maxc=delta.max_tokens_changed||null;
   const effc=delta.effort_changed||null;
@@ -281,10 +281,17 @@ function DeltaSummary({ delta, labels=DELTA_EN, tone="inline", style }) {
   if(betaRem) parts.push(<Badge key="br" tone="del" mono>−{betaRem} {pl(betaRem,L.beta,L.betas)}</Badge>);
   remAdd.forEach(k=>parts.push(<Badge key={"cxa"+k} tone="add">+{rn(k)}</Badge>));
   remRem.forEach(k=>parts.push(<Badge key={"cxr"+k} tone="del">−{rn(k)}</Badge>));
+  // A reminder that survives but relocates is a change in its own right — never fold it into "unchanged".
+  remMov.forEach(m=>parts.push(<Badge key={"cxm"+m.kind} tone="mod">⇄ {rn(m.kind)}</Badge>));
   (delta.body_keys_added||[]).forEach(k=>parts.push(<Badge key={"bka"+k} tone="add" mono>+body.{k}</Badge>));
   (delta.body_keys_removed||[]).forEach(k=>parts.push(<Badge key={"bkr"+k} tone="del" mono>−body.{k}</Badge>));
   if(delta.system_blocks_changed) parts.push(<Badge key="sb" tone="mod" mono>{L.systemBlocks} {delta.system_blocks_changed.from}→{delta.system_blocks_changed.to}</Badge>);
-  if(delta.context_body_changed && !remAdd.length && !remRem.length) parts.push(<Badge key="cxm" tone="mod">~{L.context}</Badge>);
+  // Section headings are named in the explorer and compare views; the dense timeline row carries counts only.
+  const secAdd=(delta.system_sections_added||[]).length, secRem=(delta.system_sections_removed||[]).length;
+  if(secAdd) parts.push(<Badge key="ssa" tone="add" mono>+{secAdd} {pl(secAdd,L.section,L.sections)}</Badge>);
+  if(secRem) parts.push(<Badge key="ssr" tone="del" mono>−{secRem} {pl(secRem,L.section,L.sections)}</Badge>);
+  if(delta.reminder_blocks_changed) parts.push(<Badge key="rb" tone="mod" mono>{L.reminderBlocks} {delta.reminder_blocks_changed.from}→{delta.reminder_blocks_changed.to}</Badge>);
+  if(delta.context_body_changed && !remAdd.length && !remRem.length && !remMov.length) parts.push(<Badge key="cxm" tone="mod">~{L.context}</Badge>);
   if(chars) parts.push(<Badge key="c" tone="neutral" mono>{chars>0?"+":""}{chars.toLocaleString("en-US")} {L.chars}</Badge>);
   if(maxc) parts.push(<Badge key="mx" tone="mod" mono>{L.maxTokens} {(maxc.to!=null?maxc.to:0).toLocaleString("en-US")}</Badge>);
   if(effc) parts.push(<Badge key="ef" tone="accent" mono>effort {effc.to!=null?effc.to:"—"}</Badge>);

@@ -352,10 +352,10 @@ function TimelineRow({ row, t, go, last }) {
 /* ---------- What changed (explorer, unified) ---------- */
 function deltaHasChange(d){
   if(!d) return false;
-  const arr=["tools_added","tools_removed","tools_modified","betas_added","betas_removed","reminders_added","reminders_removed","body_keys_added","body_keys_removed"];
+  const arr=["tools_added","tools_removed","tools_modified","betas_added","betas_removed","reminders_added","reminders_removed","reminders_moved","system_sections_added","system_sections_removed","body_keys_added","body_keys_removed"];
   if(arr.some(k=>(d[k]||[]).length)) return true;
   if(d.probe_changed||d.model_changed||d.max_tokens_changed||d.effort_changed||d.fallbacks_changed||d.thinking_changed||d.regime_changed||d.temperature_changed||d.stream_changed||d.context_management_changed||d.diagnostics_changed) return true;
-  if(d.system_chars_delta||d.system_blocks_changed) return true;
+  if(d.system_chars_delta||d.system_blocks_changed||d.reminder_blocks_changed) return true;
   if(d.context_body_changed) return true;
   return false;
 }
@@ -378,6 +378,11 @@ function WhatChanged({ delta, t, version, go, pair }) {
     { label:t.removed,      tone:"del", strike:true,  items:delta.tools_removed,  focus:"tools" },
     { label:`${t.added} · ${t.delta.context}`,   tone:"add", strike:false, items:(delta.reminders_added||[]).map(rn),   focus:"context" },
     { label:`${t.removed} · ${t.delta.context}`, tone:"del", strike:true,  items:(delta.reminders_removed||[]).map(rn), focus:"context" },
+    // A reminder that survives but relocates (e.g. the date leaving the first user turn for the
+    // mid-turn Environment block in 2.1.266) is a change in its own right — never fold it into "unchanged".
+    { label:`${t.movedLabel} · ${t.delta.context}`, tone:"mod", strike:false, items:(delta.reminders_moved||[]).map(m=>`${rn(m.kind)} ${m.from} → ${m.to}`), focus:"context" },
+    { label:`${t.added} · ${t.systemPrompt}`,   tone:"add", strike:false, items:delta.system_sections_added,   focus:"system" },
+    { label:`${t.removed} · ${t.systemPrompt}`, tone:"del", strike:true,  items:delta.system_sections_removed, focus:"system" },
     { label:`${t.added} · beta`,   tone:"brand", strike:false, items:delta.betas_added,   focus:"beta" },
     { label:`${t.removed} · beta`, tone:"del",   strike:true,  items:delta.betas_removed, focus:"beta" },
   ].filter(g => g.items && g.items.length);
@@ -386,6 +391,7 @@ function WhatChanged({ delta, t, version, go, pair }) {
   const meta = [];
   if (delta.system_chars_delta) meta.push(`${t.systemPrompt} ${delta.system_chars_delta>0?"+":""}${delta.system_chars_delta.toLocaleString("en-US")} ${t.delta.chars}`);
   if (delta.system_blocks_changed) meta.push(`${t.delta.systemBlocks} ${delta.system_blocks_changed.from} → ${delta.system_blocks_changed.to}`);
+  if (delta.reminder_blocks_changed) meta.push(`${t.delta.reminderBlocks} ${delta.reminder_blocks_changed.from} → ${delta.reminder_blocks_changed.to}`);
   if ((delta.body_keys_added||[]).length) meta.push(`body +${delta.body_keys_added.join(" +")}`);
   if ((delta.body_keys_removed||[]).length) meta.push(`body −${delta.body_keys_removed.join(" −")}`);
   if (delta.model_changed) meta.push(`${t.model} ${shortModel(delta.model_changed.from)} → ${shortModel(delta.model_changed.to)}`);
@@ -401,7 +407,7 @@ function WhatChanged({ delta, t, version, go, pair }) {
   if (delta.context_management_changed) meta.push(`context_management ${delta.context_management_changed.from?"~":"— →"} ${delta.context_management_changed.to?(delta.context_management_changed.from?t.modifiedLabel:"set"):"—"}`);
   if (delta.diagnostics_changed) meta.push(`diagnostics ${delta.diagnostics_changed.from!=null?t.modifiedLabel:"— → set"}`);
   if (delta.probe_changed) meta.push(`${t.probe} ${delta.probe_changed.from} → ${delta.probe_changed.to}`);
-  if (delta.context_body_changed && !(delta.reminders_added||[]).length && !(delta.reminders_removed||[]).length) meta.push(`${t.injectedContext} ~ ${t.modifiedLabel}`);
+  if (delta.context_body_changed && !(delta.reminders_added||[]).length && !(delta.reminders_removed||[]).length && !(delta.reminders_moved||[]).length) meta.push(`${t.injectedContext} ~ ${t.modifiedLabel}`);
 
   if (!groups.length && !meta.length) return <span style={{ fontFamily:"var(--font-editorial)", fontSize:"var(--t-h3)", color:"var(--text-faint)" }}>{t.delta.noChange}</span>;
 
@@ -704,6 +710,22 @@ function ChangelogPanel({ t, locale, version, entry }) {
     />
   );
 }
+/* Reminder kinds between two message shapes. A kind whose location changed
+   (`role@messageIndex`, or `system[]` for the cached system prompt) is MOVED and
+   is reported once — never also as added/removed. Shared by the model-axis delta
+   and the compare view so every surface classifies the same pair the same way
+   (mirrors computeDelta in scripts/build-data.js). Also owns the `<system-reminder>`
+   block-count comparison, so that predicate lives in one place. */
+function reminderDelta(sa, sb){
+  const aR=new Set((sa&&sa.reminder_kinds)||[]), bR=new Set((sb&&sb.reminder_kinds)||[]);
+  const aL=(sa&&sa.kind_locations)||{}, bL=(sb&&sb.kind_locations)||{};
+  const moved=Object.keys(bL).filter(k=>aL[k]&&aL[k]!==bL[k]).map(k=>({ kind:k, from:aL[k], to:bL[k] }));
+  const mv=new Set(moved.map(m=>m.kind));
+  const aB=sa&&sa.reminder_blocks, bB=sb&&sb.reminder_blocks;
+  const blocksChanged=(aB!=null&&bB!=null&&aB!==bB) ? { from:aB, to:bB } : null;
+  return { moved, added:[...bR].filter(k=>!aR.has(k)&&!mv.has(k)), removed:[...aR].filter(k=>!bR.has(k)&&!mv.has(k)), blocksChanged };
+}
+
 /* ---------- Model-axis panel (pinned-model variant vs default capture) ----------
    Renders with the same structured WhatChanged language as the explorer panel:
    delta computed at runtime from the two captures (no prose from status). */
@@ -716,16 +738,23 @@ function variantDelta(a, b){
   const pB=new Set(a.betas||[]), cB=new Set(b.betas||[]);
   const ba=(b.betas||[]).filter(x=>!pB.has(x)); if(ba.length)d.betas_added=ba;
   const br=(a.betas||[]).filter(x=>!cB.has(x)); if(br.length)d.betas_removed=br;
-  const aR=new Set((a.msg_shape&&a.msg_shape.reminder_kinds)||[]), bR=new Set((b.msg_shape&&b.msg_shape.reminder_kinds)||[]);
-  const ra=[...bR].filter(x=>!aR.has(x)); if(ra.length)d.reminders_added=ra;
-  const rr=[...aR].filter(x=>!bR.has(x)); if(rr.length)d.reminders_removed=rr;
+  const rd=reminderDelta(a.msg_shape, b.msg_shape);
+  if(rd.moved.length)d.reminders_moved=rd.moved;
+  if(rd.added.length)d.reminders_added=rd.added;
+  if(rd.removed.length)d.reminders_removed=rd.removed;
+  // Level-1 headings only — the same section grammar as splitSections and build-data.
+  const secs=(s)=>[...new Set((s||[]).map(x=>x.text||"").join("\n").split("\n").filter(l=>/^# \S/.test(l)).map(l=>l.trim()))];
+  const aS=new Set(secs(a.system)), bSecs=secs(b.system), bS=new Set(bSecs);
+  const ssa=bSecs.filter(x=>!aS.has(x)); if(ssa.length)d.system_sections_added=ssa;
+  const ssr=[...aS].filter(x=>!bS.has(x)); if(ssr.length)d.system_sections_removed=ssr;
+  if(rd.blocksChanged)d.reminder_blocks_changed=rd.blocksChanged;
   const sc=(b.system||[]).reduce((s,x)=>s+x.text.length,0)-(a.system||[]).reduce((s,x)=>s+x.text.length,0); if(sc)d.system_chars_delta=sc;
   if(a.model!==b.model)d.model_changed={from:a.model,to:b.model};
   if(a.max_tokens!==b.max_tokens)d.max_tokens_changed={from:a.max_tokens,to:b.max_tokens};
   if((a.effort||null)!==(b.effort||null))d.effort_changed={from:a.effort||null,to:b.effort||null};
   if(JSON.stringify(a.thinking||null)!==JSON.stringify(b.thinking||null))d.thinking_changed={from:a.thinking?a.thinking.type:null,to:b.thinking?b.thinking.type:null};
   if(JSON.stringify(a.fallbacks||null)!==JSON.stringify(b.fallbacks||null))d.fallbacks_changed={from:a.fallbacks||null,to:b.fallbacks||null};
-  if(!ra.length&&!rr.length&&messagesTextOf(a)!==messagesTextOf(b))d.context_body_changed=true;
+  if(!rd.added.length&&!rd.removed.length&&!rd.moved.length&&messagesTextOf(a)!==messagesTextOf(b))d.context_body_changed=true;
   return d;
 }
 function ModelAxisPanel({ variant, base, t, go, version }){
@@ -1194,13 +1223,14 @@ function CompareView({ t, locale, from, to, go, focus }) {
     const raw = lineDiff(systemTextOf(a).split("\n"), systemTextOf(b).split("\n"));
     const pB=new Set(a.betas||[]), cB=new Set(b.betas||[]);
     const sa=a.msg_shape, sb=b.msg_shape;
-    const pR=new Set((sa&&sa.reminder_kinds)||[]), cR=new Set((sb&&sb.reminder_kinds)||[]);
-    const ctx = (sa&&sb) ? {
-      added:(sb.reminder_kinds||[]).filter(x=>!pR.has(x)),
-      removed:(sa.reminder_kinds||[]).filter(x=>!cR.has(x)),
+    const rd=(sa&&sb) ? reminderDelta(sa, sb) : null;
+    const ctx = rd ? {
+      added:rd.added, removed:rd.removed, moved:rd.moved,
       from:sa, to:sb,
       probeChanged: sa.probe!==sb.probe ? { from:sa.probe, to:sb.probe } : null,
       blockChanged: sa.block_count!==sb.block_count ? { from:sa.block_count, to:sb.block_count } : null,
+      // `<system-reminder>` block count — the same fact the timeline's "context blocks a→b" badge reports.
+      reminderBlocksChanged: rd.blocksChanged,
       textRows: (function(){ const at=messagesTextOf(a), bt=messagesTextOf(b); if(at===bt) return null; const raw=lineDiff(at.split("\n"), bt.split("\n")); return { rows:hunk(raw), adds:raw.filter(r=>r.kind==="add").length, dels:raw.filter(r=>r.kind==="del").length }; })(),
     } : null;
     return {
@@ -1227,7 +1257,7 @@ function CompareView({ t, locale, from, to, go, focus }) {
   const noSystemChange = valid && adds===0 && dels===0;
   const noToolChange = valid && tools.all.length===0;
   const noBetaChange = valid && !(betaAdded.length || betaRemoved.length || maxChange || modelChange || fbChange || thinkingChange || effortChange || tempChange || streamChange || cmChange || diagChange);
-  const noCtxChange = valid && !(ctx && (ctx.added.length || ctx.removed.length || ctx.probeChanged || ctx.blockChanged || ctx.textRows));
+  const noCtxChange = valid && !(ctx && (ctx.added.length || ctx.removed.length || ctx.moved.length || ctx.probeChanged || ctx.blockChanged || ctx.reminderBlocksChanged || ctx.textRows));
 
   const outline = React.useMemo(()=>{
     if(!valid) return [];
@@ -1242,10 +1272,10 @@ function CompareView({ t, locale, from, to, go, focus }) {
         items: tools.all.map(x=>({ id:`tool-${x.name}`, name:x.name, status:x.change })) });
     }
     if(!noBetaChange) out.push({ id:"cmp-beta", label:t.betaChanges, counts:{ add:betaAdded.length, del:betaRemoved.length }, items:[] });
-    if(!noCtxChange){ const ba=ctx.textRows?ctx.textRows.adds:0, bd=ctx.textRows?ctx.textRows.dels:0; const cmod=(ctx.probeChanged?1:0)+(ctx.blockChanged?1:0); out.push({ id:"cmp-context", label:t.injectedChanges, counts:{ add:ctx.added.length+ba, del:ctx.removed.length+bd, mod:cmod }, items:[] }); }
+    if(!noCtxChange){ const ba=ctx.textRows?ctx.textRows.adds:0, bd=ctx.textRows?ctx.textRows.dels:0; const cmod=ctx.moved.length+(ctx.probeChanged?1:0)+(ctx.blockChanged?1:0)+(ctx.reminderBlocksChanged?1:0); out.push({ id:"cmp-context", label:t.injectedChanges, counts:{ add:ctx.added.length+ba, del:ctx.removed.length+bd, mod:cmod }, items:[] }); }
     if(changelogRangeVersions(from, to).length) out.push({ id:"cmp-changelog", label:t.changelog, counts:{}, items:[] });
     return out;
-  }, [valid, from, to]);
+  }, [valid, from, to, t]);
 
   const [activeId, setActiveId] = React.useState(null);
   React.useEffect(()=>{
@@ -1389,10 +1419,11 @@ function CompareView({ t, locale, from, to, go, focus }) {
           <div id="cmp-context" style={{ scrollMarginTop:84 }}>
             <Eyebrow style={{ marginBottom:12 }}>{t.injectedChanges}</Eyebrow>
             <div style={{ display:"grid", gap:12 }}>
-                {(ctx.added.length || ctx.removed.length) ? (
+                {(ctx.added.length || ctx.removed.length || ctx.moved.length) ? (
                   <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
                     {ctx.added.map(k=><Tag key={"a"+k} style={{ fontSize:"var(--t-caption)", color:"var(--add-text)", borderColor:"var(--add-edge)", background:"var(--add-surface)" }}>+ {(t.delta.reminderNames&&t.delta.reminderNames[k])||k}</Tag>)}
                     {ctx.removed.map(k=><Tag key={"r"+k} style={{ fontSize:"var(--t-caption)", color:"var(--del-text)", borderColor:"var(--del-edge)", background:"var(--del-surface)", textDecoration:"line-through" }}>− {(t.delta.reminderNames&&t.delta.reminderNames[k])||k}</Tag>)}
+                    {ctx.moved.map(m=><Tag key={"m"+m.kind} style={{ fontSize:"var(--t-caption)", color:"var(--mod-text)", borderColor:"var(--mod-edge)", background:"var(--mod-surface)" }}>⇄ {(t.delta.reminderNames&&t.delta.reminderNames[m.kind])||m.kind} {m.from} → {m.to}</Tag>)}
                   </div>
                 ) : null}
                 {ctx.probeChanged && (
@@ -1409,6 +1440,14 @@ function CompareView({ t, locale, from, to, go, focus }) {
                     <span style={{ color:"var(--del-text)" }}>{ctx.blockChanged.from}</span>
                     <Icon name="arrowR" size={14} style={{ color:"var(--text-faint)" }} />
                     <span style={{ color:"var(--add-text)" }}>{ctx.blockChanged.to}</span>
+                  </div>
+                )}
+                {ctx.reminderBlocksChanged && (
+                  <div style={{ display:"flex", alignItems:"center", gap:10, fontFamily:"var(--font-mono)", fontSize:"var(--t-code-sm)" }}>
+                    <Badge tone="mod" mono>{t.delta.reminderBlocks}</Badge>
+                    <span style={{ color:"var(--del-text)" }}>{ctx.reminderBlocksChanged.from}</span>
+                    <Icon name="arrowR" size={14} style={{ color:"var(--text-faint)" }} />
+                    <span style={{ color:"var(--add-text)" }}>{ctx.reminderBlocksChanged.to}</span>
                   </div>
                 )}
                 {ctx.textRows && <InjectedContentDiff data={ctx.textRows} t={t} />}

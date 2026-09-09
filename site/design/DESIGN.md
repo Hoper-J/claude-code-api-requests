@@ -237,7 +237,7 @@ Site views:
   system prompt **by section** (`# Heading` blocks classified added/removed/modified/
   unchanged, drill-in line diff, unified toggle); tools (incl. before→after of a modified
   tool's description and input_schema); beta features; `max_tokens` / `effort`; and the
-  **injected message context** (reminder kinds, probe, block count). Sections with no
+  **injected message context** (reminder kinds added / removed / relocated, probe, block counts). Sections with no
   change are omitted entirely. A trailing **changelog** section lists the official release
   notes for the compared span (`(from, to]`, newest first, same 译文/原文 toggle as the
   explorer) — payload diff and stated release notes on one screen. Two versions on the same
@@ -249,12 +249,14 @@ Site views:
 > new versions are pulled (the manifest's `versions`/`failed`/`auxiliary_captures` lists
 > are the source of truth, so the newest release always sorts to the top). The build
 > extracts each captured request's `system` blocks, `tools` schemas, `messages` (with
-> `cache_control` ttl), `max_tokens`, `temperature`, `stream`, `output_config.effort`,
+> `cache_control` ttl) and their structure signature (reminder kinds with a `role@message`
+> or `system[]` location, block counts, probe, cache breaks), `max_tokens`, `temperature`, `stream`, `output_config.effort`,
 > `diagnostics`, `context_management`, the parsed `Anthropic-Beta` set, and the response
 > `reply` / `stop_reason` / full `usage`; dedupes shared blocks/tools/messages; and
 > computes the structured `change_delta` between consecutive **main** ok versions
-> (tools/beta/reminder add-remove-modify, `system_chars_delta`, `max_tokens`/`effort`/
-> `model` changes). `COUNTS` reports `ok` (main captures) / `aux` / `fail` separately, so
+> (tools/beta add-remove-modify, reminder kinds added/removed/moved with their location,
+> `<system-reminder>` block count, level-1 system-prompt sections added/removed,
+> `system_chars_delta`, `max_tokens`/`effort`/`model` changes). `COUNTS` reports `ok` (main captures) / `aux` / `fail` separately, so
 > "captured" excludes auxiliary. The corpus is heterogeneous and shown verbatim — models
 > evolve (sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8), `max_tokens` grows (32,000 → 64,000 at 2.1.77), the beta set
 > expands, and the injected-context line grows (CLAUDE.md → session hook → skills → date →

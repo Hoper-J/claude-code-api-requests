@@ -73,6 +73,13 @@ const STR = {
       effort: (c) => `effort ${c.from ?? "unset"} → ${c.to ?? "unset"}`,
       thinking: (c) => `thinking ${c.from} → ${c.to}`,
       systemChars: (n) => `system prompt ${n > 0 ? "+" : ""}${n} chars`,
+      systemBlocks: (c) => `system blocks ${c.from} → ${c.to}`,
+      sectionsAdded: (a) => `+section${a.length > 1 ? "s" : ""} ${a.join(", ")}`,
+      sectionsRemoved: (a) => `−section${a.length > 1 ? "s" : ""} ${a.join(", ")}`,
+      remindersAdded: (a) => `+context ${a.join(", ")}`,
+      remindersRemoved: (a) => `−context ${a.join(", ")}`,
+      remindersMoved: (a) => `context moved ${a.map((m) => `${m.kind} ${m.from} → ${m.to}`).join(", ")}`,
+      reminderBlocks: (c) => `context blocks ${c.from} → ${c.to}`,
       contextBody: "injected context changed",
       other: (k) => k.replace(/_/g, " "),
     },
@@ -97,6 +104,13 @@ const STR = {
       effort: (c) => `effort ${c.from ?? "未设"} → ${c.to ?? "未设"}`,
       thinking: (c) => `thinking ${c.from} → ${c.to}`,
       systemChars: (n) => `系统提示 ${n > 0 ? "+" : ""}${n} 字符`,
+      systemBlocks: (c) => `system 块 ${c.from} → ${c.to}`,
+      sectionsAdded: (a) => `新增小节 ${a.join("、")}`,
+      sectionsRemoved: (a) => `移除小节 ${a.join("、")}`,
+      remindersAdded: (a) => `新增上下文 ${a.join("、")}`,
+      remindersRemoved: (a) => `移除上下文 ${a.join("、")}`,
+      remindersMoved: (a) => `上下文迁移 ${a.map((m) => `${m.kind} ${m.from} → ${m.to}`).join("、")}`,
+      reminderBlocks: (c) => `上下文块 ${c.from} → ${c.to}`,
       contextBody: "注入上下文变化",
       other: (k) => k.replace(/_/g, " "),
     },
@@ -123,8 +137,16 @@ function deltaPhrases(delta, S) {
     else if (k === "effort_changed") { if (v.from !== v.to) out.push(d.effort(v)); }
     else if (k === "thinking_changed") { if (v.from !== v.to) out.push(d.thinking(v)); }
     else if (k === "system_chars_delta" && v) out.push(d.systemChars(v));
+    else if (k === "system_blocks_changed") { if (v && v.from !== v.to) out.push(d.systemBlocks(v)); }
+    else if (k === "system_sections_added" && v.length) out.push(d.sectionsAdded(v));
+    else if (k === "system_sections_removed" && v.length) out.push(d.sectionsRemoved(v));
+    else if (k === "reminders_added" && v.length) out.push(d.remindersAdded(v));
+    else if (k === "reminders_removed" && v.length) out.push(d.remindersRemoved(v));
+    else if (k === "reminders_moved" && v.length) out.push(d.remindersMoved(v));
+    else if (k === "reminder_blocks_changed") { if (v && v.from !== v.to) out.push(d.reminderBlocks(v)); }
     else if (k === "context_body_changed" && v) out.push(d.contextBody);
-    else if (!["tools_added", "tools_removed", "tools_modified", "betas_added", "betas_removed", "system_chars_delta", "context_body_changed"].includes(k)) out.push(d.other(k));
+    else if (!["tools_added", "tools_removed", "tools_modified", "betas_added", "betas_removed", "system_chars_delta", "context_body_changed",
+      "system_sections_added", "system_sections_removed", "reminders_added", "reminders_removed", "reminders_moved"].includes(k)) out.push(d.other(k));
   }
   return out;
 }
@@ -136,8 +158,10 @@ function axisExtras(axisDelta, canonDelta) {
   const canon = canonDelta || {};
   for (const [k, v] of Object.entries(axisDelta || {})) {
     if (Array.isArray(v)) {
-      const base = new Set(canon[k] || []);
-      const diff = v.filter((x) => !base.has(x));
+      /* reminders_moved carries objects — compare entries by value, not by reference. */
+      const key = (x) => (typeof x === "string" ? x : JSON.stringify(x));
+      const base = new Set((canon[k] || []).map(key));
+      const diff = v.filter((x) => !base.has(key(x)));
       if (diff.length) extra[k] = diff;
     } else if (JSON.stringify(v) !== JSON.stringify(canon[k])) {
       extra[k] = v;
