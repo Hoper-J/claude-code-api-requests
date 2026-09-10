@@ -2,7 +2,7 @@
 
 [English](findings.md) | **中文**
 
-**当前语料**：计数与切分以 `manifest.json` 的 `.counts` 为准。基线部分——2.0.0 至 2.1.201 的每个版本及其钉定模型变体——于 2026-07-06 在同一环境一次性捕获，基线内的跨版本差异反映的是版本本身的变化，而非采集日期带来的漂移；此后的新版本随发布逐个抓取（各样本自带 `captured_at`）。变体按各版本当时的模型抓取，且只在该模型不是当时默认时才单独存在：sonnet 轴在 2.0.50 及之前就是 canonical 本身（sonnet-4-5 即默认），2.0.51 起为 `claude-sonnet-4-5` 变体，2.1.197 起换用 `claude-sonnet-5`（交接版两者皆有）；`claude-haiku-4-5` 覆盖全线；`claude-fable-5[1m]` 自 2.1.170 起。默认模型链 sonnet-4-5 → opus-4-5 → opus-4-6 → opus-4-7 → opus-4-8，`max_tokens` 在 2.1.76(32000) → 2.1.77(64000) 抬升。内置工具集在 2.1.196 新增 `ReportFindings`（版本门控：相同条件下对 2.1.195/2.1.196 背靠背重抓可复现该边界），2.1.207 新增 `DeferredToolPlaceholder`（观察到的边界：四条采集轴在同一版本一齐出现）。`# userEmail` 上下文块自 2.1.108 起出现，其后连续存在。
+**当前语料**：计数与切分以 `manifest.json` 的 `.counts` 为准。基线部分——2.0.0 至 2.1.201 的每个版本及其钉定模型变体——于 2026-07-06 在同一环境一次性捕获，基线内的跨版本差异反映的是版本本身的变化，而非采集日期带来的漂移；此后的新版本随发布逐个抓取（各样本自带 `captured_at`）。变体按各版本当时的模型抓取，且只在该模型不是当时默认时才单独存在：sonnet 轴在 2.0.50 及之前就是 canonical 本身（sonnet-4-5 即默认），2.0.51 起为 `claude-sonnet-4-5` 变体，2.1.197 起换用 `claude-sonnet-5`（交接版两者皆有）；`claude-haiku-4-5` 覆盖全线；`claude-fable-5[1m]` 自 2.1.170 起，2.1.257 起交接给 `claude-fable-5-1`（交接版两者皆有；Fable 5.1 默认即 1M，故无 `[1m]` 后缀）。默认模型链 sonnet-4-5 → opus-4-5（2.0.51）→ opus-4-6（2.1.32）→ opus-4-7（2.1.111）→ opus-4-8（2.1.154）→ opus-5（2.1.219，该版保留一份 `claude-opus-4-8` 变体作交接标记），`max_tokens` 在 2.1.76(32000) → 2.1.77(64000) 抬升。内置工具集在 2.1.196 新增 `ReportFindings`（版本门控：相同条件下对 2.1.195/2.1.196 背靠背重抓可复现该边界），2.1.207 新增 `DeferredToolPlaceholder`（观察到的边界：四条采集轴在同一版本一齐出现）。`# userEmail` 上下文块自 2.1.108 起出现，其后连续存在。
 
 ---
 
@@ -51,13 +51,16 @@ MCP 工具 `mcp__example__echo` 的形态随版本变化，有两个阶段：
 > 当前语料中没有此形态的样本——所有采集（canonical 与变体）均在服务器连上后完成。但该竞速是 headless `-p` 固有的：条件不利时采集仍可能输掉（仓库 git 历史保留的早期快照就在 2.1.153–2.1.173 一段输过）。
 
 ### 注入消息的结构演变
-`messages[]` 的形态当前分五代：
+`messages[]` 的形态当前分六代：
 
 - **2.0.0 – 2.1.68**：单条 user 消息（content 数组）。
-- **2.1.69 – 2.1.109**：**两条 user 消息**——第一条是 **string 型** content，内容即 `<available-deferred-tools>` 枚举（deferred 机制初代承载）；第二条是 4 块的数组。
-- **2.1.110 – 2.1.153**：并回**单条 user 消息**（5 块数组），deferred 枚举改为数组内的 system-reminder 块（固定句式 "The following deferred tools…" 自这一代起出现）。
+- **2.1.69 – 2.1.109**：**两条 user 消息**——第一条是 **string 型** content，内容即 `<available-deferred-tools>` 枚举（deferred 机制初代承载）；第二条是 4 块的数组（2.1.84 起 agent-types 块加入，变 5 块）。
+- **2.1.110 – 2.1.153**：并回**单条 user 消息**（6 块数组：hook / deferred 枚举 / agent-types / skills / claudeMd 五个 system-reminder + 提示词），deferred 枚举改为数组内的 system-reminder 块（固定句式 “The following deferred tools…” 自这一代起出现）。
 - **2.1.154 – 2.1.206**：user（2 块） + 一条 string 型 `role:"system"` 消息，deferred/技能/钩子上下文并入后者。
-- **2.1.207 起**：仍是这两条消息的布局，但 system 消息的 content 变为携带 `cache_control` 的单块**数组**——缓存断点从最后一条 user 消息挪到 system 消息上。
+- **2.1.207 – 2.1.265**（按采集所见）：仍是这两条消息的布局，但 system 消息的 content 变为携带 `cache_control` 的单块**数组**——缓存断点从最后一条 user 消息挪到 system 消息上。
+- **2.1.266 起**（按采集所见；**受 flag 门控，不是客户端边界**——见下表）：首轮 user 消息拆成**三个** `<system-reminder>` 块——CLAUDE.md + 记忆（不再带 `# claudeMd` 标题）、`# userEmail`、以及新的 git 署名提醒（`Co-Authored-By` / "Generated with" 两行；Bash 工具描述同步多了一句）——外加提示词。运行时 **Environment** 块（工作目录、git、平台、shell、OS、模型、知识截止）与日期离开缓存的 `system[]`，进入中途 system 消息，其顺序变为 钩子 → `# Environment` → 模型行 → deferred/技能上下文；缓存段的 `# Environment` 只剩静态的模型目录几行（−392 字符）。缓存断点仍在 system 消息上。
+
+> 钉定模型的各轴并不都与 canonical 同形：`claude-haiku-4-5` 从不拿到中途 system 消息（每个样本都是单条 user 消息——2.1.266 布局下为 12 块 / 11 个 reminder），`claude-sonnet-5` 自 2.1.203 起把中途上下文包成多个完整的 `<system-reminder>…</system-reminder>` 对、拼在**同一个** content 块里——数 reminder 要按标签数，不能按块数。
 
 > 两个扫描坑：`content` 可能是 string 而非数组（2.1.69–2.1.109 与 2.1.154–2.1.206），只遍历数组会漏判；user 消息也不一定只有一条。
 > 可以把"工具名出现"和"是否内联 schema"分开展示——这是 ToolSearch 机制引入的一个独立演进维度。
@@ -78,6 +81,7 @@ MCP 工具 `mcp__example__echo` 的形态随版本变化，有两个阶段：
 - **不是 append**：默认那两块指令（block 2+3，共 ~6.2KB）整段消失、被文件那一块取代。净效果 **4 块 → 3 块**。
 - **只动 system prompt 的指令体**：`tools`（10 个）、`messages`、`model`、`max_tokens` 不变。
 - **文件逐字放入、无包裹**：该块以文件首行 `# Claude Fable 5 — System Prompt` 起；122,750（文件字符）vs 122,428（落入），差 ~322 为首尾空白/换行归一。
+- **数字口径**：“默认”列取自实验自身的基线 run，是**线上原始长度**。语料快照中同期版本（2.1.170–2.1.186）该块显示 5,077 字符，差的 10 字符来自脱敏：system[3] 的 `# Memory` 一节含捕获者真实 home 前缀，[sanitize](../sanitize/README.zh-CN.md) 将其替换为 `~`（不保长），全块仅此一处替换。四块中只有它含该路径，其余各块与语料逐字一致。
 
 **实际效果**：agent 以文件里的指令运行（覆盖 Claude Code 默认的"你是个交互式 agent…"那套），但保留 Claude Code 的工具集与注入上下文。此为 CLI 覆盖行为、非语料捕获（corpus 全是默认请求）。
 
@@ -88,6 +92,7 @@ MCP 工具 `mcp__example__echo` 的形态随版本变化，有两个阶段：
 | **MCP 显示 still-connecting** | MCP 连接 vs 首请求构建的**竞速**（采集时机） |
 | **多出 agent-types 注入块** | 服务端 GrowthBook flag `tengu_agent_list_attach` **×** 客户端代码路径（≥2.1.84），两者同时满足时出现（同一构建曾相隔三天先抓无、后抓有）。当前语料在 flag 开启期捕获，2.1.84 起连续存在，因此在语料中呈现为干净的版本边界 |
 | **deferred 工具列表随采集条件漂移**（`RemoteTrigger`↔`LSP` 互换、多出 `DesignSync`…） | 枚举出哪些 deferred 工具 =（当时开着的服务端 flag）×（客户端版本） |
+| **2.1.266 的 reminder 布局**（首轮拆块、Environment 与日期进中途 system 消息、git 署名提醒） | 服务端 flag（GrowthBook，缓存在共用的配置目录里、由任一运行的客户端刷新）**×** 两个客户端下限。2026-09-10 在 flag 开启下重采：2.1.250 旧，**2.1.251** 起首轮拆块与 Environment 迁移，**2.1.265** 起多出署名提醒（2.1.263 没有）。按发布即采的样本恰在 2026-09-09 日中撞上翻转：2.1.265 canonical（较早）旧、其钉定模型变体（约 3 小时后）新、2.1.266 起新——因此语料时间线把边界显示在 2.1.266，而客户端下限其实更低 |
 
 > **agent-types 注入块**
 >
