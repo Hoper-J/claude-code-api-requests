@@ -93,6 +93,7 @@ MCP 工具 `mcp__example__echo` 的形态随版本变化，有两个阶段：
 | **多出 agent-types 注入块** | 服务端 GrowthBook flag `tengu_agent_list_attach` **×** 客户端代码路径（≥2.1.84），两者同时满足时出现（同一构建曾相隔三天先抓无、后抓有）。当前语料在 flag 开启期捕获，2.1.84 起连续存在，因此在语料中呈现为干净的版本边界 |
 | **deferred 工具列表随采集条件漂移**（`RemoteTrigger`↔`LSP` 互换、多出 `DesignSync`…） | 枚举出哪些 deferred 工具 =（当时开着的服务端 flag）×（客户端版本） |
 | **2.1.266 的 reminder 布局**（首轮拆块、Environment 与日期进中途 system 消息、git 署名提醒） | 服务端 flag（GrowthBook，缓存在共用的配置目录里、由任一运行的客户端刷新）**×** 两个客户端下限。2026-09-10 在 flag 开启下重采：2.1.250 旧，**2.1.251** 起首轮拆块与 Environment 迁移，**2.1.265** 起多出署名提醒（2.1.263 没有）。按发布即采的样本恰在 2026-09-09 日中撞上翻转：2.1.265 canonical（较早）旧、其钉定模型变体（约 3 小时后）新、2.1.266 起新——因此语料时间线把边界显示在 2.1.266，而客户端下限其实更低 |
+| **`mid-conversation-system-clear-at-2026-08-21` beta**（带中途 system 消息的请求：opus-5 / sonnet-5 / fable-5-1，haiku 无） | 2026-09-17 观察到的服务端灰度：当日重采的 2.1.273（sonnet）与 2.1.274（opus）都带它，09-16 按发布即采的 2.1.274 canonical 不带。语料中它首次出现在 2.1.274 的 sonnet/fable 变体上，因此该版本的模型轴面板把它显示为模型差异、下一个 canonical 又把它显示为版本 delta——两者都是采集日期造成的 |
 
 > **agent-types 注入块**
 >
