@@ -1,0 +1,40 @@
+{
+ "variant_id": "claude-haiku-4-5",
+ "base_version": "2.1.281",
+ "pinned_model": "claude-haiku-4-5",
+ "is_default": false,
+ "captured_at": "2026-09-24",
+ "model_in_request": "claude-haiku-4-5",
+ "http_status": 200,
+ "ja3": "<ja3#10>",
+ "ja4": "<ja4#9>",
+ "system_blocks": 4,
+ "tools_count": 12,
+ "is_quota_probe": false,
+ "is_main_inference": true,
+ "model_axis_diff": {
+  "vs": "claude-opus-5-5 (default)",
+  "model": {
+   "from": "claude-opus-5-5",
+   "to": "claude-haiku-4-5"
+  },
+  "fallbacks_added": false,
+  "beta_added": [
+   "message-threads-2026-08-12"
+  ],
+  "beta_removed": [
+   "context-1m-2025-08-07",
+   "mid-conversation-system-2026-04-07",
+   "per-turn-control-2026-07-01",
+   "mid-conversation-tool-changes-2026-07-01",
+   "mid-conversation-system-clear-at-2026-08-21",
+   "effort-2025-11-24"
+  ],
+  "body_keys_added": [
+   "thread"
+  ],
+  "body_keys_removed": [
+   "output_config"
+  ]
+ }
+}
