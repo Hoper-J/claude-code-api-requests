@@ -3,9 +3,9 @@
  "base_version": "2.1.105",
  "pinned_model": "claude-haiku-4-5",
  "is_default": false,
- "captured_at": "2026-07-06",
+ "captured_at": "2026-09-25",
  "model_in_request": "claude-haiku-4-5",
- "http_status": 529,
+ "http_status": 200,
  "ja3": "<ja3#1>",
  "ja4": "<ja4#1>",
  "system_blocks": 3,
@@ -27,8 +27,7 @@
   ],
   "body_keys_added": [],
   "body_keys_removed": [
-   "output_config",
-   "stream"
+   "output_config"
   ]
  }
 }
