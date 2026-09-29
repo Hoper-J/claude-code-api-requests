@@ -330,7 +330,7 @@ for (const v of versions) {
        pinned to the default model itself — anything reading variants[0] (e.g.
        the timeline badge) gets a real alternate model, not a duplicate.
        Families sort alphabetically; INSIDE a family the newest generation
-       comes first (sonnet-5 before sonnet-4-5 at a handover version). */
+       comes first (sonnet-5-5 before sonnet-5 at a handover version). */
     const famBase = m => String(m || "").replace(/^claude-/, "").replace(/-\d{8}$/, "");
     const famName = m => famBase(m).replace(/[-\d].*$/, "");
     const famNums = m => (famBase(m).match(/\d+/g) || []).map(Number);
@@ -419,7 +419,7 @@ const INDEX = [...versions].sort((a, b) => cmpV(b, a)).map(v => {
 // the default model itself belongs to the family — and chain deltas along the
 // axis. Adding a future generation = one entry at the head of `variants`.
 const FAMILIES = {
-  sonnet: { variants: ["claude-sonnet-5", "claude-sonnet-4-5"], canonical: /^claude-sonnet/ },
+  sonnet: { variants: ["claude-sonnet-5-5", "claude-sonnet-5", "claude-sonnet-4-5"], canonical: /^claude-sonnet/ },
   haiku:  { variants: ["claude-haiku-4-5"], canonical: /^claude-haiku/ },
   fable:  { variants: ["claude-fable-5-1", "claude-fable-5-1m"], canonical: /^claude-fable/ },
 };
