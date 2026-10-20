@@ -61,6 +61,8 @@ git clone https://github.com/Hoper-J/claude-code-api-requests && cd claude-code-
 
 - `corpus/` 是 Claude Code CLI 实际发出的 API 请求的**存档**，其中的系统提示、工具定义等内容由 Anthropic 创作并享有相应权利，在此仅作**教育与研究**用途呈现。
 - 语料基线（2.0.0–2.1.201，含每个版本及其钉定模型变体）在同一天、同一环境中一次性捕获，此后的新版本随发布逐个补充。基线内的跨版本差异反映的是版本本身的变化，而非采集日期带来的漂移。
+- 基线之后的版本是每个构建发布时的单次采集，而 Anthropic 会通过服务端 flag 灰度提示词、beta 头、输出上限等——所以 2.1.201 之后的时间线 delta 可能反映的是采集日期而非构建本身。每份样本自带 `captured_at`；已经通过重采老构建分辨清楚的案例列在 [findings.zh-CN.md → 与版本无关的差异](corpus/findings.zh-CN.md#与版本无关的差异)。
+- 自 2026-06-27 起，日常工作——采集、changelog 快照及其中文翻译、findings 更新、数据与离线包重建——由 Fable 完成，以 `Agent <noreply@api-requests.cc>` 提交。
 - `corpus/changelog/` 是官方 `anthropics/claude-code` CHANGELOG.md 的快照，对应译文为构建期生成的辅助内容，以英文原文为准。
 - 本仓库的 MIT 许可证只覆盖本仓库的代码、构建管线、站点实现与文档编排，不对语料内容主张任何权利。
 - 权利方如对任何内容有异议，提交 issue 即移除。
