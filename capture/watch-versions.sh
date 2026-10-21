@@ -107,10 +107,14 @@ say "captured + sanitized + data.js rebuilt: $MISSING"
 # ---- refresh the official changelog snapshot + rebuild its artifacts ----
 # Non-fatal: the committed snapshot keeps the site consistent if the fetch
 # fails; new versions just show the "no entry" state until the next run.
+# The fetch is MERGED into the snapshot (site/scripts/merge-changelog.js), not
+# copied over it: upstream only keeps its recent history, the snapshot keeps
+# every section the corpus versions need.
 if curl -sfL --max-time 60 https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md \
      -o "$PROJ/corpus/changelog/CHANGELOG.md.tmp" >>"$LOG" 2>&1 \
-   && [ -s "$PROJ/corpus/changelog/CHANGELOG.md.tmp" ]; then
-  mv "$PROJ/corpus/changelog/CHANGELOG.md.tmp" "$PROJ/corpus/changelog/CHANGELOG.md"
+   && [ -s "$PROJ/corpus/changelog/CHANGELOG.md.tmp" ] \
+   && node "$PROJ/site/scripts/merge-changelog.js" "$PROJ/corpus/changelog/CHANGELOG.md.tmp" >>"$LOG" 2>&1; then
+  rm -f "$PROJ/corpus/changelog/CHANGELOG.md.tmp"
   node "$PROJ/site/scripts/build-changelog.js" >>"$LOG" 2>&1 \
     && node "$PROJ/site/scripts/build-changelog-zh.js" >>"$LOG" 2>&1 \
     || say "changelog rebuild FAILED (data.js unaffected) — see $LOG"

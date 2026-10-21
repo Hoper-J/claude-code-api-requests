@@ -53,6 +53,7 @@ The data files in `corpus/` are **masked in place** by `sanitize/sanitize.js`, p
 | `node sanitize/sanitize.js [--check]` | Sanitize; `--check` verifies without writing | [sanitize/README.md](sanitize/README.md) |
 | `node site/scripts/build-data.js corpus [--emit-json site/public/data]` | corpus → `data.js` + static JSON API, with built-in PII detection | [site/README.md](site/README.md) |
 | `node site/scripts/build-changelog.js` | Official changelog snapshot → `changelog-data.js` | [corpus/changelog/README.md](corpus/changelog/README.md) |
+| `node site/scripts/merge-changelog.js <upstream.md> [--dry-run\|--json]` | Merge a fetched upstream CHANGELOG.md into the snapshot (upstream keeps only recent history; older sections stay) | [corpus/changelog/README.md](corpus/changelog/README.md) |
 | `node site/scripts/build-changelog-zh.js [--status\|--missing\|--check\|--apply\|--apply-list]` | Chinese-translation pipeline (agent interface) | [site/i18n/README.md](site/i18n/README.md) |
 | `node site/scripts/build-offline.js` | Offline single-file reader `claude-code-api-requests-offline.html` | [site/vendor/README.md](site/vendor/README.md) |
 | `node site/scripts/build-feed.js` | Atom feeds `feed.xml` / `feed.zh-CN.xml` from the built artifacts (run last) | [site/README.md](site/README.md) |
@@ -63,7 +64,7 @@ The data files in `corpus/` are **masked in place** by `sanitize/sanitize.js`, p
 - The corpus baseline (2.0.0–2.1.201, every version and pinned-model variant) was captured in one pass on a single day in one environment; newer versions are added as they ship. Within the baseline, cross-version differences read as version signal rather than capture-date drift.
 - Versions after the baseline are single captures taken as each build ships, and Anthropic rolls server-side changes (prompt text, beta headers, output limits) out by flag — so a timeline delta after 2.1.201 can reflect the capture date rather than the build. Each sample records its own `captured_at`; the cases classified by re-capturing older builds are listed in [findings.md → Differences that aren't about the version](corpus/findings.md#differences-that-arent-about-the-version).
 - Since 2026-06-27 the routine work — captures, the changelog snapshot and its Chinese translation, findings updates, data and offline rebuilds — is done by Fable and committed as `Agent <noreply@api-requests.cc>`.
-- `corpus/changelog/` is a snapshot of the official `anthropics/claude-code` CHANGELOG.md; the accompanying translations are build-time helper content, with the English original taking precedence.
+- `corpus/changelog/` is a snapshot of the official `anthropics/claude-code` CHANGELOG.md (upstream keeps only its recent history, so new fetches are merged into the snapshot and the older sections stay); the accompanying translations are build-time helper content, with the English original taking precedence.
 - This repo's MIT license covers only this repo's code, build pipeline, site implementation, and documentation arrangement — it makes no claim over the corpus content.
 - If a rights holder objects to any content, open an issue and it will be removed.
 - The self-hosted fonts (Newsreader / Hanken Grotesk / JetBrains Mono) are SIL OFL 1.1; license text in [site/public/assets/fonts/LICENSE-OFL.md](site/public/assets/fonts/LICENSE-OFL.md).

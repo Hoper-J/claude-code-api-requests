@@ -53,6 +53,7 @@ git clone https://github.com/Hoper-J/claude-code-api-requests && cd claude-code-
 | `node sanitize/sanitize.js [--check]` | 脱敏，`--check` 只检不改 | [sanitize/README.zh-CN.md](sanitize/README.zh-CN.md) |
 | `node site/scripts/build-data.js corpus [--emit-json site/public/data]` | 语料 → `data.js` + 静态 JSON API，自带 PII 检测 | [site/README.zh-CN.md](site/README.zh-CN.md) |
 | `node site/scripts/build-changelog.js` | 官方 changelog 快照 → `changelog-data.js` | [corpus/changelog/README.zh-CN.md](corpus/changelog/README.zh-CN.md) |
+| `node site/scripts/merge-changelog.js <upstream.md> [--dry-run\|--json]` | 把拉取的上游 CHANGELOG.md 合并进快照（上游只保留近期历史，较早小节保留） | [corpus/changelog/README.zh-CN.md](corpus/changelog/README.zh-CN.md) |
 | `node site/scripts/build-changelog-zh.js [--status\|--missing\|--check\|--apply\|--apply-list]` | 中文译文管线（agent 接口） | [site/i18n/README.zh-CN.md](site/i18n/README.zh-CN.md) |
 | `node site/scripts/build-offline.js` | 离线阅读界面 `claude-code-api-requests-offline.html` | [site/vendor/README.zh-CN.md](site/vendor/README.zh-CN.md) |
 | `node site/scripts/build-feed.js` | 由构建产物生成 Atom 订阅 `feed.xml` / `feed.zh-CN.xml`（最后运行） | [site/README.zh-CN.md](site/README.zh-CN.md) |
@@ -63,7 +64,7 @@ git clone https://github.com/Hoper-J/claude-code-api-requests && cd claude-code-
 - 语料基线（2.0.0–2.1.201，含每个版本及其钉定模型变体）在同一天、同一环境中一次性捕获，此后的新版本随发布逐个补充。基线内的跨版本差异反映的是版本本身的变化，而非采集日期带来的漂移。
 - 基线之后的版本是每个构建发布时的单次采集，而 Anthropic 会通过服务端 flag 灰度提示词、beta 头、输出上限等——所以 2.1.201 之后的时间线 delta 可能反映的是采集日期而非构建本身。每份样本自带 `captured_at`；已经通过重采老构建分辨清楚的案例列在 [findings.zh-CN.md → 与版本无关的差异](corpus/findings.zh-CN.md#与版本无关的差异)。
 - 自 2026-06-27 起，日常工作——采集、changelog 快照及其中文翻译、findings 更新、数据与离线包重建——由 Fable 完成，以 `Agent <noreply@api-requests.cc>` 提交。
-- `corpus/changelog/` 是官方 `anthropics/claude-code` CHANGELOG.md 的快照，对应译文为构建期生成的辅助内容，以英文原文为准。
+- `corpus/changelog/` 是官方 `anthropics/claude-code` CHANGELOG.md 的快照（上游只保留近期历史，因此拉取结果合并进快照，较早的小节保留），对应译文为构建期生成的辅助内容，以英文原文为准。
 - 本仓库的 MIT 许可证只覆盖本仓库的代码、构建管线、站点实现与文档编排，不对语料内容主张任何权利。
 - 权利方如对任何内容有异议，提交 issue 即移除。
 - 自托管字体（Newsreader / Hanken Grotesk / JetBrains Mono）为 SIL OFL 1.1，许可文本见 [site/public/assets/fonts/LICENSE-OFL.md](site/public/assets/fonts/LICENSE-OFL.md)。
