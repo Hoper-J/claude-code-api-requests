@@ -1,15 +1,15 @@
 {
  "schema_version": 1,
- "generated_at": "2026-10-23",
- "started_at": "2026-10-23",
+ "generated_at": "2026-10-26",
+ "started_at": "2026-10-26",
  "ccwrap": "~/ccwrap/ccwrap",
  "prompt": "Reply with the single word: ping",
  "model_policy": "default",
  "counts": {
-  "total": 337,
-  "ok": 337,
+  "total": 338,
+  "ok": 338,
   "fail": 0,
-  "main_inference": 337,
+  "main_inference": 338,
   "auxiliary": 0
  },
  "failed": [],
@@ -370,7 +370,8 @@
    "2.1.306",
    "2.1.308",
    "2.1.309",
-   "2.1.310"
+   "2.1.310",
+   "2.1.311"
   ]
  },
  "versions": [
@@ -648,6 +649,7 @@
   "2.1.309",
   "2.1.31",
   "2.1.310",
+  "2.1.311",
   "2.1.32",
   "2.1.33",
   "2.1.34",
