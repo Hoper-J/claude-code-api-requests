@@ -16,7 +16,8 @@
 #   capture/capture.sh --reclassify              # recompute status from existing full.json
 #
 # Default uses the official npm registry. Slow networks (e.g. mainland China) may
-# add: --registry https://registry.npmmirror.com (optional; speeds install only).
+# add: --registry https://registry.npmmirror.com (optional; used for the version
+# list and the installs — a mirror may lag behind npmjs by hours).
 #
 # Every run ends with an automatic in-place PII sanitize of ./corpus
 # (sanitize/sanitize.js, idempotent). Skip it with --no-sanitize (debug only —

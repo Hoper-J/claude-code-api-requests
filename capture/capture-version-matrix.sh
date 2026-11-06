@@ -354,7 +354,7 @@ preflight() {
 enumerate() {
   local cache="$ROOT/_cache/versions.txt"
   if [ "$REFRESH_VERSIONS" = 1 ] || [ ! -s "$cache" ]; then
-    npm view "$PKGNAME" versions --json 2>/dev/null \
+    npm view "$PKGNAME" versions --json ${REGISTRY:+--registry "$REGISTRY"} 2>/dev/null \
       | jq -r '.[] | select(test("^2\\."))' \
       | grep -E '^2\.[0-9]+\.[0-9]+$' | sort -V > "$cache.tmp" && mv -f "$cache.tmp" "$cache" \
       || die "failed to fetch version list from npm"

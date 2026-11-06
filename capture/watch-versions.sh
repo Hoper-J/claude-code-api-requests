@@ -69,7 +69,7 @@ fi
 trap 'rmdir "$LOCK" 2>/dev/null' EXIT
 
 # ---- discover: npm 2.x versions vs corpus manifest ----
-MISSING="$(npm view "$PKG" versions --json 2>/dev/null | node -e '
+MISSING="$(npm view "$PKG" versions --json --registry https://registry.npmjs.org 2>/dev/null | node -e '
 let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
   let all; try { all=JSON.parse(s); } catch(e) { process.exit(2); }
   const cmp=(a,b)=>{const x=a.split(".").map(Number),y=b.split(".").map(Number);
